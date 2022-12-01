@@ -1,10 +1,17 @@
 import unittest
 
 import challenges 
+import data
 
-class TestBasics(unittest.TestCase):
-    def test_t(self):
-        self.assertTrue(1,1)    
+class TestChallenges(unittest.TestCase):
+    def test_counting_calories(self):
+        cc = challenges.CaloriesService()
+        calories = data.calories
+        result = cc.getMaxCalories(calories)
+        self.assertEqual(result,24000)    
+
+        result = cc.get3MaxCalories(calories)
+        self.assertEqual(result,45000)    
 
 
 
