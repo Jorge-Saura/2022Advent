@@ -13,6 +13,12 @@ class TestChallenges(unittest.TestCase):
         result = cc.get3MaxCalories(calories)
         self.assertEqual(result,45000)    
 
+    def test_rps_counting(self):
+        rps = challenges.RPSGame()
+        gambles = data.rps_gambles
+        self.assertEqual(rps.get_gambles_score(gambles),15)
+        gambles = data.rps_gambles
+        self.assertEqual(rps.get_gambles_with_decription(gambles),12)
 
 
 if __name__ == '__main__':

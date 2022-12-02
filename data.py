@@ -12,3 +12,8 @@ calories ="1000\n" \
             "9000\n" \
             "\n" \
             "10000"
+
+rps_gambles = """A Y
+B X
+C Z"""
+
