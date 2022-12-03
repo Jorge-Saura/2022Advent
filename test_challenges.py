@@ -20,6 +20,30 @@ class TestChallenges(unittest.TestCase):
         gambles = data.rps_gambles
         self.assertEqual(rps.get_gambles_with_decription(gambles),12)
 
+    def test_find_repeated(self):
+        fr = challenges.Rucksack()
+        self.assertEqual(fr._find_repeated('vJrwpWtwJgWrhcsFMMfFFhFp'),'p')
+        self.assertEqual(fr._find_repeated('jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL'),'L')
+        self.assertEqual(fr._find_repeated('pTsdppTMPtqqdbnlNVzJVbSSnbZR'),'b')
+
+        self.assertEqual(fr._find_repeated('aaabbb'),'')
+
+        self.assertEqual(fr._find_all_repeated(data.rp_elements),['p','L','P','v','t','s'])
+
+        self.assertEqual(fr._get_element_priority('a'),1)
+        self.assertEqual(fr._get_element_priority('z'),26)
+        self.assertEqual(fr._get_element_priority('A'),27)
+        self.assertEqual(fr._get_element_priority('Z'),52)
+
+        self.assertEqual(fr.get_rearrange_priority(data.rp_elements),157)
+
+        self.assertEqual(fr._find_all_repetead_in_groups_3(data.rp_elements),['r','Z'])
+        self.assertEqual(fr.get_badges_priority(data.rp_elements),70)
+
+
+
+
+
 
 if __name__ == '__main__':
 
