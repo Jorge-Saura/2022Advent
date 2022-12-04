@@ -140,3 +140,67 @@ class Rucksack:
         result = sum([self._get_element_priority(x) for x in rep_elements])
 
         return result
+    
+
+
+#--- Day 4: Camp Cleanup ---
+class RangeInRange:
+    def is_range_inside_range(self, r1:list[int], r2:list[int]) -> bool:
+        pass
+
+class RangeInsideRange(RangeInRange):
+    def is_range_inside_range(self, r1:list[int], r2:list[int]) -> bool:
+        return r1[0] >= r2[0] and r1[1] <= r2[1]
+
+class RangeOverlapRange(RangeInRange):
+    def is_range_inside_range(self, r1:list[int], r2:list[int]) -> bool:
+        return (r2[0] <= r1[0] <= r2[1]) or (r2[0] <= r1[1] <= r2[1])
+
+class Cleanup:
+    range_checker = None
+
+    def __init__(self, rangeChecker:RangeInRange):
+        self.range_checker = rangeChecker
+
+    def _get_pairs(self, input:str) -> list[str]:
+        pairs = input.split("\n")
+
+        return pairs
+    
+    def _extract_pairs(self, pair:str) -> list:
+        p1,p2 = pair.split(",")
+
+        elf1 = [int(x) for x in p1.split('-')]
+        elf2 = [int(x) for x in p2.split('-')]
+
+        return [elf1,elf2]
+
+    def count_sections_inside(self, input:str) -> int:
+
+        pairs = self._get_pairs(input)
+
+        result = 0
+        for pair in pairs:
+            sections = self._extract_pairs(pair)
+            s1, s2 = sections[0], sections[1]
+
+            result += self.range_checker.is_range_inside_range(s1,s2) or self.range_checker.is_range_inside_range(s2,s1)
+
+        return result
+
+    # def _range_overlap_range(self, r1:list[int], r2:list[int]) -> bool:
+    #     return (r2[0] <= r1[0] <= r2[1]) or (r2[0] <= r1[1] <= r2[1])
+
+
+    # def count_sections_overlap(self, input:str) -> int:
+
+    #     pairs = self._get_pairs(input)
+
+    #     result = 0
+    #     for pair in pairs:
+    #         sections = self._extract_pairs(pair)
+    #         s1, s2 = sections[0], sections[1]
+
+    #         result += self._range_overlap_range(s1,s2) or self._range_overlap_range(s2,s1)
+
+    #     return result

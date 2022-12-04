@@ -40,6 +40,16 @@ class TestChallenges(unittest.TestCase):
         self.assertEqual(fr._find_all_repetead_in_groups_3(data.rp_elements),['r','Z'])
         self.assertEqual(fr.get_badges_priority(data.rp_elements),70)
 
+    def test_clean_pairs(self):
+        r_inside_r = challenges.RangeInsideRange()
+        c_inside = challenges.Cleanup(r_inside_r)
+        self.assertEqual(c_inside._extract_pairs("2-6,3-5"),[[2,6],[3,5]])
+        self.assertEqual(c_inside.count_sections_inside(data.clean_data),2)
+
+        r_overlap_r = challenges.RangeOverlapRange()
+        c_overlap = challenges.Cleanup(r_overlap_r)
+        self.assertEqual(c_overlap.count_sections_inside(data.clean_data),4)
+
 
 
 
