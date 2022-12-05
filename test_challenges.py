@@ -51,9 +51,53 @@ class TestChallenges(unittest.TestCase):
         self.assertEqual(c_overlap.count_sections_inside(data.clean_data),4)
 
 
+    def test_supply_stacks(self):
+        cc = challenges.CargoCrane()
+        self.assertEqual(cc._is_empty_line(""),True)
+        self.assertEqual(cc._is_empty_line(" "),True)
+        self.assertEqual(cc._is_empty_line("algo"),False)
+
+        cc._decode_input("stack\n\ninstructions")
+        self.assertEqual(cc.stacks, ['stack'])
+        self.assertEqual(cc.instructions, ['instructions'])
+
+        #decode cargo streams
+        cargo = ["           ",
+                 " 1   2   3 "]
+        self.assertEqual(cc._get_stacks(cargo),[[],[],[]])
+
+        cargo = ["[1]     [3]",
+                 " 1   2   3 "]
+        self.assertEqual(cc._get_stacks(cargo),[['1'],[],['3']])
+
+        cargo = ["[1]     [2]",
+                 "[3] [4] [5]",
+                 " 1   2   3 "]
+        self.assertEqual(cc._get_stacks(cargo),[['3','1'],['4'],['5','2']])
+
+        #decode instructions
+        m = cc._get_instructions(["move 2 from 4 to 6"])
+        self.assertEqual(m[0].num_blocks,2)
+        self.assertEqual(m[0].from_pos,3)
+        self.assertEqual(m[0].to_pos,5)
+
+        l = [['3','1'],['4'],['5','2']]
+        m = challenges.Move(1,0,2)
+        self.assertEqual(cc._exectue_instruction(l,m), [['3'],['4'],['5','2','1']])
+
+        l = [['3','1'],['4'],['5','2']]
+        m = challenges.Move(2,0,2)
+        self.assertEqual(cc._exectue_instruction(l,m), [[],['4'],['5','2','1','3']])
+
+        result = cc.move_cargo(data.supply_stacks,cc._exectue_instruction)
+        self.assertEqual(result,'CMZ')
+
+        result = cc.move_cargo(data.supply_stacks,cc._exectue_instruction_new_crane)
+        self.assertEqual(result,'MCD')
 
 
 
+    
 
 if __name__ == '__main__':
 

@@ -188,19 +188,103 @@ class Cleanup:
 
         return result
 
-    # def _range_overlap_range(self, r1:list[int], r2:list[int]) -> bool:
-    #     return (r2[0] <= r1[0] <= r2[1]) or (r2[0] <= r1[1] <= r2[1])
+
+#--- Day 5: Supply Stacks ---
+
+class Move:
+    num_blocks = 0
+    from_pos = 0
+    to_pos = 0
+
+    def __init__(self, n_blocks, from_pos, to_pos) -> None:
+        self.num_blocks = n_blocks
+        self.from_pos = from_pos
+        self.to_pos = to_pos
+
+class CargoCrane:
+    stacks = []
+    instructions = []
+    
+    def _is_empty_line(self, line:str) -> bool:
+        line = line.strip()
+        return False if line else True
+
+    def _decode_input(self, input:str):
+        self.stacks = []
+        self.instructions = []
+
+        lines = input.split('\n')
+
+        change_flagg = 0 # when empty line change to instructions
+        for line in lines:
+            if self._is_empty_line(line):
+                change_flagg = 1
+            elif not change_flagg:
+                self.stacks.append(line)
+            elif change_flagg:
+                self.instructions.append(line)
+
+    def _get_stacks(self, stacks_text:list[str])-> list[str]:
+        # [P] [L]     [C] [V] [W] [W] [H] [L]
+        # [G] [B] [V] [R] [L] [N] [G] [P] [F]
+        # [R] [T] [S] [S] [S] [T] [D] [L] [P]
+        # [N] [J] [M] [L] [P] [C] [H] [Z] [R]
+        #  1   2   3   4   5   6   7   8   9 
+
+        num_stacks = len(stacks_text[-1].split())
+        stacks_list = [ [] for _ in range(num_stacks) ] 
+        stacks_text = stacks_text[:-1]
+        stacks_text.reverse()
+        for line in stacks_text:
+            idx_line = 1
+            pointer_move = 4
+            for idx_vector in range(num_stacks):
+                c = line[idx_line]
+                if c != ' ':
+                    stacks_list[idx_vector].append(c)
+                idx_line += pointer_move
+        return stacks_list
 
 
-    # def count_sections_overlap(self, input:str) -> int:
+    def _get_instructions(self, instructions:list[str])-> list[Move]:
+        # example: move 2 from 4 to 6
+        moves = []
 
-    #     pairs = self._get_pairs(input)
+        for line in instructions:
+            words = line.split()
+            move = Move(int(words[1]), int(words[3])-1, int(words[5])-1)
+            moves.append(move)
 
-    #     result = 0
-    #     for pair in pairs:
-    #         sections = self._extract_pairs(pair)
-    #         s1, s2 = sections[0], sections[1]
+        return moves
 
-    #         result += self._range_overlap_range(s1,s2) or self._range_overlap_range(s2,s1)
 
-    #     return result
+    def _exectue_instruction(self,stacks:list, instruction:Move) -> list:
+
+        blocks_to_move = stacks[instruction.from_pos][-instruction.num_blocks:]
+        blocks_to_move.reverse()
+
+        stacks[instruction.to_pos] = stacks[instruction.to_pos] + blocks_to_move
+        stacks[instruction.from_pos] = stacks[instruction.from_pos][:-instruction.num_blocks]
+
+        return stacks
+
+    def _exectue_instruction_new_crane(self,stacks:list, instruction:Move) -> list:
+
+        blocks_to_move = stacks[instruction.from_pos][-instruction.num_blocks:]
+
+        stacks[instruction.to_pos] = stacks[instruction.to_pos] + blocks_to_move
+        stacks[instruction.from_pos] = stacks[instruction.from_pos][:-instruction.num_blocks]
+
+        return stacks
+
+    def move_cargo(self, input: str, crane) -> str:
+        self._decode_input(input)
+
+        stacks = self._get_stacks(self.stacks)
+        instructions = self._get_instructions(self.instructions)
+
+        for instruction in instructions:
+            stacks = crane(stacks, instruction)
+
+        top_cargo = ''.join([stream[-1] for stream in stacks])
+        return top_cargo
