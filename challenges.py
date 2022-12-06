@@ -288,3 +288,27 @@ class CargoCrane:
 
         top_cargo = ''.join([stream[-1] for stream in stacks])
         return top_cargo
+
+
+#--- Day 6: Tuning Trouble ---
+
+class MarkerFinder:
+    def get_marker(self, input:str) -> int:
+        pass
+
+class MarkerFourDifferentChars(MarkerFinder):
+    def get_marker(self, input:str) -> int:
+        marker = ''
+        idx = 0
+        lenght = len(input)
+        while len(marker) < 4 and idx < lenght:
+            char = input[idx]
+            marker += char
+
+            if char in marker[:-1]:
+                i = marker.index(char)
+                marker = marker[i+1:]
+
+            idx += 1
+
+        return idx

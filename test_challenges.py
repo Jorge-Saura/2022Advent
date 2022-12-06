@@ -50,7 +50,6 @@ class TestChallenges(unittest.TestCase):
         c_overlap = challenges.Cleanup(r_overlap_r)
         self.assertEqual(c_overlap.count_sections_inside(data.clean_data),4)
 
-
     def test_supply_stacks(self):
         cc = challenges.CargoCrane()
         self.assertEqual(cc._is_empty_line(""),True)
@@ -94,6 +93,14 @@ class TestChallenges(unittest.TestCase):
 
         result = cc.move_cargo(data.supply_stacks,cc._exectue_instruction_new_crane)
         self.assertEqual(result,'MCD')
+
+    def test_find_start_packet_marker(self):
+        cc = challenges.MarkerFourDifferentChars()
+        self.assertEqual(cc.get_marker('mjqjpqmgbljsphdztnvjfqwrcgsmlb'),7)
+        self.assertEqual(cc.get_marker('bvwbjplbgvbhsrlpgdmjqwftvncz'),5)
+        self.assertEqual(cc.get_marker('nppdvjthqldpwncqszvftbrmjlhg'),6)
+        self.assertEqual(cc.get_marker('nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg'),10)
+        self.assertEqual(cc.get_marker('zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw'),11)
 
 
 
