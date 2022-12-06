@@ -95,12 +95,22 @@ class TestChallenges(unittest.TestCase):
         self.assertEqual(result,'MCD')
 
     def test_find_start_packet_marker(self):
-        cc = challenges.MarkerFourDifferentChars()
+        cc = challenges.MarkerDifferentChars(4)
         self.assertEqual(cc.get_marker('mjqjpqmgbljsphdztnvjfqwrcgsmlb'),7)
         self.assertEqual(cc.get_marker('bvwbjplbgvbhsrlpgdmjqwftvncz'),5)
         self.assertEqual(cc.get_marker('nppdvjthqldpwncqszvftbrmjlhg'),6)
         self.assertEqual(cc.get_marker('nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg'),10)
         self.assertEqual(cc.get_marker('zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw'),11)
+
+        cc = challenges.MarkerDifferentChars(14)
+        self.assertEqual(cc.get_marker('mjqjpqmgbljsphdztnvjfqwrcgsmlb'),19)
+        self.assertEqual(cc.get_marker('bvwbjplbgvbhsrlpgdmjqwftvncz'),23)
+        self.assertEqual(cc.get_marker('nppdvjthqldpwncqszvftbrmjlhg'),23)
+        self.assertEqual(cc.get_marker('nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg'),29)
+        self.assertEqual(cc.get_marker('zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw'),26)
+
+        self.assertEqual(cc.get_marker(data.find_marker),26)
+        
 
 
 

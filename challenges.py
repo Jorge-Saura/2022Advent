@@ -296,12 +296,17 @@ class MarkerFinder:
     def get_marker(self, input:str) -> int:
         pass
 
-class MarkerFourDifferentChars(MarkerFinder):
+class MarkerDifferentChars(MarkerFinder):
+    diffChars = 4
+    def __init__(self, diffChars: int) -> None:
+        super().__init__()
+        self.diffChars = diffChars
+        
     def get_marker(self, input:str) -> int:
         marker = ''
         idx = 0
         lenght = len(input)
-        while len(marker) < 4 and idx < lenght:
+        while len(marker) < self.diffChars and idx < lenght:
             char = input[idx]
             marker += char
 
@@ -312,3 +317,4 @@ class MarkerFourDifferentChars(MarkerFinder):
             idx += 1
 
         return idx
+
