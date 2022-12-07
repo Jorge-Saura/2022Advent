@@ -325,10 +325,8 @@ class FileSysteNavigator:
     root = None
     all_dirs = None
 
-
     def _get_input_lines(self, input:str) -> list[str]:
         return input.split('\n')
-
 
     def get_directory_folders(self, input: str):
         self.all_dirs = dict()
@@ -357,6 +355,12 @@ class FileSysteNavigator:
         
         return sum([x for x in self.all_dirs.values() if x <= size])
 
+    def get_smallest_deletable_directory(self,size:int = 0) -> int:
+        total_system_space = 70000000
+        min_space_required = size
+        space_ocuppied = self.all_dirs['root'] 
+        if total_system_space - space_ocuppied < min_space_required:
+            return min([x for x in self.all_dirs.values() if total_system_space - (space_ocuppied - x) >= min_space_required])
 
         
 

@@ -118,6 +118,10 @@ class TestChallenges(unittest.TestCase):
         f.get_directory_folders(data.filesystem)
         self.assertEqual(f.sum_sizes_directories_over_size(100000),95437)
 
+        f.get_directory_folders(data.filesystem)
+        self.assertEqual(f.get_smallest_deletable_directory(30000000),24933642)
+
+
 
         
 
