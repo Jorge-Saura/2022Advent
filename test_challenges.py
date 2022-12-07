@@ -108,8 +108,17 @@ class TestChallenges(unittest.TestCase):
         self.assertEqual(cc.get_marker('nppdvjthqldpwncqszvftbrmjlhg'),23)
         self.assertEqual(cc.get_marker('nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg'),29)
         self.assertEqual(cc.get_marker('zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw'),26)
+        
+    def test_find_dirs_size(self):
 
-        self.assertEqual(cc.get_marker(data.find_marker),26)
+        f = challenges.FileSysteNavigator()
+        f.get_directory_folders(data.filesystem_simple)
+        self.assertEqual(f.sum_sizes_directories_over_size(5),5)
+
+        f.get_directory_folders(data.filesystem)
+        self.assertEqual(f.sum_sizes_directories_over_size(100000),95437)
+
+
         
 
 

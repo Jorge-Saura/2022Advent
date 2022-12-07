@@ -140,10 +140,10 @@ class Rucksack:
         result = sum([self._get_element_priority(x) for x in rep_elements])
 
         return result
+
     
-
-
 #--- Day 4: Camp Cleanup ---
+
 class RangeInRange:
     def is_range_inside_range(self, r1:list[int], r2:list[int]) -> bool:
         pass
@@ -317,4 +317,49 @@ class MarkerDifferentChars(MarkerFinder):
             idx += 1
 
         return idx
+
+#--- Day 7: No Space Left On Device ---
+
+class FileSysteNavigator:
+
+    root = None
+    all_dirs = None
+
+
+    def _get_input_lines(self, input:str) -> list[str]:
+        return input.split('\n')
+
+
+    def get_directory_folders(self, input: str):
+        self.all_dirs = dict()
+        lines = self._get_input_lines(input)
+        current_dir = None
+        for line in lines:
+            if line.startswith('$ cd /'):
+                current_dir = 'root'
+                self.all_dirs[current_dir]  = 0
+            elif line.startswith('$ cd ..'):
+                current_dir = current_dir[:current_dir.rindex('/')]
+            elif line.startswith('$ cd'):
+                current_dir = current_dir + '/' + line.replace('$ cd ','').strip()
+                self.all_dirs[current_dir]  = 0
+            elif line.startswith("$ ls") or line.startswith("dir"):
+                pass
+            else:
+                size,name = line.split()
+                self.all_dirs[current_dir] += int(size)
+                path_dirs = current_dir
+                while path_dirs != 'root':
+                    path_dirs = path_dirs[:path_dirs.rindex('/')]
+                    self.all_dirs[path_dirs] += int(size)
+        
+    def sum_sizes_directories_over_size(self,size:int = 0) -> int:
+        
+        return sum([x for x in self.all_dirs.values() if x <= size])
+
+
+        
+
+        
+
 
