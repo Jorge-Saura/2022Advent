@@ -135,6 +135,12 @@ class TestChallenges(unittest.TestCase):
         self.assertEqual(tv.get_number_of_visible_trees(data.tree_grid_simple),8)
         self.assertEqual(tv.get_number_of_visible_trees(data.tree_grid),21)
 
+        self.assertEqual(tv._get_scenic_score((2,1)),4)
+        self.assertEqual(tv._get_scenic_score((2,3)),8)
+        self.assertEqual(tv.get_best_scenic_score(data.tree_grid),8)
+
+
+
 
         
 
