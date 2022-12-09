@@ -318,6 +318,7 @@ class MarkerDifferentChars(MarkerFinder):
 
         return idx
 
+
 #--- Day 7: No Space Left On Device ---
 
 class FileSysteNavigator:
@@ -362,7 +363,7 @@ class FileSysteNavigator:
         if total_system_space - space_ocuppied < min_space_required:
             return min([x for x in self.all_dirs.values() if total_system_space - (space_ocuppied - x) >= min_space_required])
 
-        
+
 #--- Day 8: Treetop Tree House ---
 
 import numpy as np
@@ -441,9 +442,6 @@ class TreeVisibility:
 
         return score_up * score_down * score_left * score_right
 
-
-
-
     def get_best_scenic_score(self, input:str) -> int:
 
         self.tree_grid = self._decode_data(input)
@@ -459,3 +457,66 @@ class TreeVisibility:
         
         return best_score
 
+
+#--- Day 9: Rope Bridge ---
+
+class Rope:
+    initial_state = None
+    no_move = [
+            (-1,1),(0,1),(1,1),
+            (-1,0),(0,0),(1,0),
+            (-1,-1),(0,-1),(1,-1)
+            ]
+
+
+    def _decode_movements(self, input:str) -> list[tuple]:
+        lines = input.split('\n')
+        result = []
+        for line in lines:
+            dir, mov = line.split()
+            mov = int(mov)
+            result.append((dir,mov))
+
+        return result
+
+    def _diff_head_tail(self, head:tuple, tail:tuple) -> tuple:
+        return (head[0]-tail[0],head[1]-tail[1])
+
+    def _move_head(self, direction:str, head_last_point:tuple) -> tuple:
+        current_point = None
+        if direction == 'U':
+            current_point = (head_last_point[0],head_last_point[1]+1)
+        if direction == 'D':
+            current_point = (head_last_point[0],head_last_point[1]-1)
+        if direction == 'L':
+            current_point = (head_last_point[0]-1,head_last_point[1])
+        if direction == 'R':
+            current_point = (head_last_point[0]+1,head_last_point[1])
+        
+        return current_point
+
+    # (x,y). x: left or right, y: up or down
+    def move_rope(self, input:str) -> int:
+        head_moves = self._decode_movements(input)
+
+        tail_visited = set()
+
+        head_last_point = (0,0)
+        tail_last_point = head_last_point
+        tail_visited.add((0,0))
+        for move in head_moves:
+
+            for _ in range(move[1]):
+                dir = move[0]
+                current_point = self._move_head(dir,head_last_point)
+                diff = self._diff_head_tail(current_point,tail_last_point)
+                
+                if diff not in self.no_move:
+                    tail_last_point = head_last_point
+                    tail_visited.add(tail_last_point)
+                    
+                head_last_point = current_point
+
+            
+
+        return len(tail_visited)

@@ -121,7 +121,6 @@ class TestChallenges(unittest.TestCase):
         f.get_directory_folders(data.filesystem)
         self.assertEqual(f.get_smallest_deletable_directory(30000000),24933642)
 
-
     def test_tree_visibility(self):
 
         tv = challenges.TreeVisibility()
@@ -130,7 +129,6 @@ class TestChallenges(unittest.TestCase):
 
         self.assertEqual(tv._is_visible_horizontally(2,grid,(1,1)), True)
         self.assertEqual(tv._is_visible_horizontally(0,grid,(1,1)), False)
-        
 
         self.assertEqual(tv.get_number_of_visible_trees(data.tree_grid_simple),8)
         self.assertEqual(tv.get_number_of_visible_trees(data.tree_grid),21)
@@ -139,14 +137,14 @@ class TestChallenges(unittest.TestCase):
         self.assertEqual(tv._get_scenic_score((2,3)),8)
         self.assertEqual(tv.get_best_scenic_score(data.tree_grid),8)
 
+    def test_rope_bridge(self): 
 
+        r = challenges.Rope()
 
-
+        self.assertEqual(r._decode_movements("U 1\nL 3"),[('U',1),('L',3)])
         
-
-
-
-    
+        self.assertEqual(r.move_rope(data.rope_moves),13)
+        self.assertEqual(r.move_rope(data.rope_moves2),13)
 
 if __name__ == '__main__':
 
