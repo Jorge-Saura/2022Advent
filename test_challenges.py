@@ -144,7 +144,12 @@ class TestChallenges(unittest.TestCase):
         self.assertEqual(r._decode_movements("U 1\nL 3"),[('U',1),('L',3)])
         
         self.assertEqual(r.move_rope(data.rope_moves),13)
-        self.assertEqual(r.move_rope(data.rope_moves2),13)
+
+        self.assertEqual(r.move_rope_10_knots(data.rope_moves),1)
+
+        self.assertEqual(r.move_rope_10_knots(data.rope_moves1),36)
+
+
 
 if __name__ == '__main__':
 
