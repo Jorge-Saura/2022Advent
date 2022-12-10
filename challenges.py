@@ -576,7 +576,6 @@ class CathodeRayTube:
 
     def _decode_instructions(self, input:str) -> list[Instruction]:
         lines = input.split('\n')
-        #(op. type, op. duration, op. value)
         instructions = []
 
         for line in lines:
@@ -603,7 +602,7 @@ class CathodeRayTube:
             if cycle == next_cycle_to_inspect:
                 cycles_inspected[cycle] = X_value
                 next_cycle_to_inspect += sum_cycles
-                
+
             cycle += 1
             if ins.type_op == 'add':
                 X_value += ins.value
@@ -611,7 +610,39 @@ class CathodeRayTube:
         return sum(x*y for x,y in cycles_inspected.items()) if cycles_inspected else 0
 
 
+    def execute_program2(self, input:str) -> int:
+        program = self._decode_instructions(input)
 
+        cycle = 1
+        X_value = 1
+
+        sprite = [1,2,3]
+        line  = ''
+        screen = ''
+
+
+        for ins in program:
+            #compruebo si tengo que dibujar pixel
+            if cycle in sprite:
+                line += '#'
+            else:
+                line += '.'
+
+
+            cycle += 1
+            if ins.type_op == 'add':
+                X_value += ins.value
+                sprite = [X_value, X_value + 1, X_value + 2]
+
+            if (cycle-1) % 40 == 0:
+                screen =  line if not screen else screen + '\n' + line 
+                line = ''
+                cycle = 1
+
+        with open('screen.txt', 'w') as f:
+            f.write(screen)
+
+        return screen
 
 
 

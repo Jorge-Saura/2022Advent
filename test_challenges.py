@@ -161,7 +161,8 @@ class TestChallenges(unittest.TestCase):
 
         self.assertEqual(crt.execute_program(data.cpu_instructions),13140)
 
-        self.assertEqual(crt.execute_program(data.cpu_instructions1),13140)
+        self.assertEqual(crt.execute_program2(data.cpu_instructions),data.screen)
+
 
 
 
