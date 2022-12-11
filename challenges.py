@@ -641,63 +641,57 @@ class CathodeRayTube:
 
 #--- Day 11: Monkey in the Middle ---
 
-from typing import Callable
-
-
+from math import lcm
 
 class Monkey:
     id = 0
     items = None
     operation = None
-
+    
     test = None
+    test_number = None
 
     items_inspected = 0
-
 
     def __init__(self, id:int, items:list[int], operation:str, test:str) -> None:
         self.id= id
         self.items = items
 
-        self.operation = operation
+        self.operation = self._set_operation(operation)
 
-        self.test = test
-
-
-    def get_operation(self, x:int) -> int:
-
-        num1, operation, num2 = self.operation[self.operation.index('=')+1:].strip().split()
-        num1 = int(num1) if num1 != 'old' else x
-        num2 = int(num2) if num2 != 'old' else x
-        result = num1 + num2
-        if operation == '*':
-            result = num1 * num2
-
-        return result
+        self.test = self._set_test(test)
 
 
-    def get_test(self, x:int) -> int:
+    def _set_operation(self, text:str) -> callable:
+        
+        num1, operation, num2 = text[text.index('=')+1:].strip().split()
+        if num2 == 'old':
+            if operation == '+':
+                return lambda x: x + x
+            else:
+                return lambda x: x * x
+        else:
+            num2 = int(num2)
+            if operation == '+':
+                return lambda x: x + num2
+            else:
+                return lambda x: x * num2
 
-        line_test, line_true, line_false = self.test.split('\n')
-        m_divisible = int(line_test.replace('Test: divisible by ','').strip())
+
+    def _set_test(self, text:str) -> callable:
+
+        line_test, line_true, line_false = text.split('\n')
+        self.test_number = int(line_test.replace('Test: divisible by ','').strip())
+
         m_true = int(line_true.replace('If true: throw to monkey ','').strip())
         m_false = int(line_false.replace('If false: throw to monkey ','').strip())
 
-        result = m_true if (x % m_divisible) == 0 else m_false
-
-        return result
+        return lambda x: m_true if (x % self.test_number) == 0 else m_false
 
 
 class MonkeyBusiness:
 
-# Monkey 2:
-#   Starting items: 79, 60, 97
-#   Operation: new = old * old
-#   Test: divisible by 13
-#     If true: throw to monkey 1
-#     If false: throw to monkey 3
-
-    def _decode_input(self, input:str) -> dict:
+    def _decode_input(self, input:str) -> dict[Monkey]:
         monkey_descriptions = input.split('\n\n')
         monkeys_dict = dict()
         for monkey_desc in monkey_descriptions:
@@ -714,15 +708,15 @@ class MonkeyBusiness:
  
         return monkeys_dict
 
-    def _proccess_monkeys(self, monkeys:dict[int, Monkey]) -> dict[int, Monkey]:
+    def _proccess_monkeys(self, monkeys:dict[int, Monkey], worry_level:callable) -> dict[int, Monkey]:
 
         for id in monkeys.keys():
             monkey = monkeys[id]
             for item in monkey.items:
                 monkey.items_inspected += 1
-                item = monkey.get_operation(item)
-                item = item // 3
-                next_monkey = monkey.get_test(item)
+                item = monkey.operation(item)
+                item = worry_level(item)
+                next_monkey = monkey.test(item)
 
                 monkeys[next_monkey].items.append(item)
 
@@ -731,16 +725,33 @@ class MonkeyBusiness:
 
         return monkeys
 
-    def get_business(self, input:str) -> int:
+    def get_business(self, input:str, rounds:int) -> int:
 
         monkeys = self._decode_input(input)
-
-        for i in range(20):
-            monkeys = self._proccess_monkeys(monkeys)
+        worry_level = lambda x: x//3
+        for i in range(rounds):
+            monkeys = self._proccess_monkeys(monkeys,worry_level)
+            print(i)
         
         total_items_instpected = [x.items_inspected for x in monkeys.values()]
         total_items_instpected.sort(reverse=True)
 
         return total_items_instpected[0] * total_items_instpected[1]
 
+
+    def get_business2(self, input:str, rounds:int) -> int:
+
+        monkeys = self._decode_input(input)
+        dividends = [monkey.test_number for monkey in monkeys.values()]
+        multiple = lcm(*dividends)
+        worry_level = lambda x: x % multiple
+
+        for i in range(rounds):
+            monkeys = self._proccess_monkeys(monkeys,worry_level)
+            print(i)
+        
+        total_items_instpected = [x.items_inspected for x in monkeys.values()]
+        total_items_instpected.sort(reverse=True)
+
+        return total_items_instpected[0] * total_items_instpected[1]
 

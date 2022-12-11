@@ -110,7 +110,6 @@ cpu_instructions_simple = """noop
 addx 3
 addx -5"""
 
-
 cpu_instructions = """addx 15
 addx -11
 addx 6
@@ -258,7 +257,6 @@ noop
 noop
 noop"""
 
-
 screen = """##..##..##..##..##..##..##..##..##..##..
 ###...###...###...###...###...###...###.
 ####....####....####....####....####....
@@ -266,177 +264,32 @@ screen = """##..##..##..##..##..##..##..##..##..##..
 ######......######......######......####
 #######.......#######.......#######....."""
 
+monkeys_attrs_simple = """Monkey 0:
+  Starting items: 79, 98
+  Operation: new = old * 19
+  Test: divisible by 23
+    If true: throw to monkey 2
+    If false: throw to monkey 3
 
-screen_one_line = """##..##..##..##..##..##..##..##..##..##..###...###...###...###...###...###...###.####....####....####....####....####....#####.....#####.....#####.....#####.....######......######......######......###########.......#######.......#######....."""
+Monkey 1:
+  Starting items: 54, 65, 75, 74
+  Operation: new = old + 6
+  Test: divisible by 19
+    If true: throw to monkey 2
+    If false: throw to monkey 0
 
+Monkey 2:
+  Starting items: 79, 60, 97
+  Operation: new = old * old
+  Test: divisible by 13
+    If true: throw to monkey 1
+    If false: throw to monkey 3
 
-
-cpu_instructions1 = """addx 2
-addx 3
-noop
-noop
-addx 1
-addx 5
-addx -1
-addx 5
-addx 1
-noop
-noop
-addx 4
-noop
-noop
-addx 5
-addx -5
-addx 6
-addx 3
-addx 1
-addx 5
-addx 1
-noop
-addx -38
-addx 41
-addx -22
-addx -14
-addx 7
-noop
-noop
-addx 3
-addx -2
-addx 2
-noop
-addx 17
-addx -12
-addx 5
-addx 2
-addx -16
-addx 17
-addx 2
-addx 5
-addx 2
-addx -30
-noop
-addx -6
-addx 1
-noop
-addx 5
-noop
-noop
-noop
-addx 5
-addx -12
-addx 17
-noop
-noop
-noop
-noop
-addx 5
-addx 10
-addx -9
-addx 2
-addx 5
-addx 2
-addx -5
-addx 6
-addx 4
-noop
-noop
-addx -37
-noop
-noop
-addx 17
-addx -12
-addx 30
-addx -23
-addx 2
-noop
-addx 3
-addx -17
-addx 22
-noop
-noop
-noop
-addx 5
-noop
-addx -10
-addx 11
-addx 4
-noop
-addx 5
-addx -2
-noop
-addx -6
-addx -29
-addx 37
-addx -30
-addx 27
-addx -2
-addx -22
-noop
-addx 3
-addx 2
-noop
-addx 7
-addx -2
-addx 2
-addx 5
-addx -5
-addx 6
-addx 2
-addx 2
-addx 5
-addx -25
-noop
-addx -10
-noop
-addx 1
-noop
-addx 2
-noop
-noop
-noop
-noop
-addx 7
-addx 1
-addx 4
-addx 1
-noop
-addx 2
-noop
-addx 3
-addx 5
-addx -1
-noop
-addx 3
-addx 5
-addx 2
-addx 1
-noop
-noop
-noop
-noop"""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Monkey 3:
+  Starting items: 74
+  Operation: new = old + 3
+  Test: divisible by 17
+    If true: throw to monkey 0
+    If false: throw to monkey 1"""
 
 

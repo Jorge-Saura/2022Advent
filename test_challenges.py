@@ -170,8 +170,10 @@ class TestChallenges(unittest.TestCase):
 
         self.assertEqual(len(monkey_atrrs),4)
 
-        self.assertEqual(mb.get_business(data.monkeys_attrs_simple),10605)
-        self.assertEqual(mb.get_business(data.monkeys_attrs1),10605)
+        self.assertEqual(mb.get_business(data.monkeys_attrs_simple,20),10605)
+
+        self.assertEqual(mb.get_business2(data.monkeys_attrs_simple,10000),52166 * 52013)
+
 
 
 
