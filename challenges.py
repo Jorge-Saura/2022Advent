@@ -562,7 +562,6 @@ class Instruction:
         self.type_op = type_op
         self.duration = duration
         self.value = value
-        
 
 class CathodeRayTube:
 
@@ -620,14 +619,12 @@ class CathodeRayTube:
         line  = ''
         screen = ''
 
-
         for ins in program:
-            #compruebo si tengo que dibujar pixel
+
             if cycle in sprite:
                 line += '#'
             else:
                 line += '.'
-
 
             cycle += 1
             if ins.type_op == 'add':
@@ -639,14 +636,111 @@ class CathodeRayTube:
                 line = ''
                 cycle = 1
 
-        with open('screen.txt', 'w') as f:
-            f.write(screen)
-
         return screen
 
 
+#--- Day 11: Monkey in the Middle ---
+
+from typing import Callable
 
 
 
+class Monkey:
+    id = 0
+    items = None
+    operation = None
+
+    test = None
+
+    items_inspected = 0
+
+
+    def __init__(self, id:int, items:list[int], operation:str, test:str) -> None:
+        self.id= id
+        self.items = items
+
+        self.operation = operation
+
+        self.test = test
+
+
+    def get_operation(self, x:int) -> int:
+
+        num1, operation, num2 = self.operation[self.operation.index('=')+1:].strip().split()
+        num1 = int(num1) if num1 != 'old' else x
+        num2 = int(num2) if num2 != 'old' else x
+        result = num1 + num2
+        if operation == '*':
+            result = num1 * num2
+
+        return result
+
+
+    def get_test(self, x:int) -> int:
+
+        line_test, line_true, line_false = self.test.split('\n')
+        m_divisible = int(line_test.replace('Test: divisible by ','').strip())
+        m_true = int(line_true.replace('If true: throw to monkey ','').strip())
+        m_false = int(line_false.replace('If false: throw to monkey ','').strip())
+
+        result = m_true if (x % m_divisible) == 0 else m_false
+
+        return result
+
+
+class MonkeyBusiness:
+
+# Monkey 2:
+#   Starting items: 79, 60, 97
+#   Operation: new = old * old
+#   Test: divisible by 13
+#     If true: throw to monkey 1
+#     If false: throw to monkey 3
+
+    def _decode_input(self, input:str) -> dict:
+        monkey_descriptions = input.split('\n\n')
+        monkeys_dict = dict()
+        for monkey_desc in monkey_descriptions:
+            line_id, line_starting, line_operation, line_test, line_true, line_false = monkey_desc.split('\n')
+            m_id = int(line_id.strip(':').replace('Monkey ',''))
+            m__starting = [int(x) for x in line_starting.replace('Starting items: ','').split(', ')]
+            
+            m_operation = line_operation
+            m_test = '\n'.join([line_test,line_true, line_false])
+
+            monkey = Monkey(m_id,m__starting,m_operation,m_test)
+            
+            monkeys_dict[monkey.id] = monkey
+ 
+        return monkeys_dict
+
+    def _proccess_monkeys(self, monkeys:dict[int, Monkey]) -> dict[int, Monkey]:
+
+        for id in monkeys.keys():
+            monkey = monkeys[id]
+            for item in monkey.items:
+                monkey.items_inspected += 1
+                item = monkey.get_operation(item)
+                item = item // 3
+                next_monkey = monkey.get_test(item)
+
+                monkeys[next_monkey].items.append(item)
+
+            monkey.items = []
+            monkeys[id] = monkey
+
+        return monkeys
+
+    def get_business(self, input:str) -> int:
+
+        monkeys = self._decode_input(input)
+
+        for i in range(20):
+            monkeys = self._proccess_monkeys(monkeys)
+        
+        total_items_instpected = [x.items_inspected for x in monkeys.values()]
+        total_items_instpected.sort(reverse=True)
+
+        return total_items_instpected[0] * total_items_instpected[1]
 
 
