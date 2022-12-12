@@ -174,7 +174,16 @@ class TestChallenges(unittest.TestCase):
 
         self.assertEqual(mb.get_business2(data.monkeys_attrs_simple,10000),52166 * 52013)
 
+    def test_hill_climbing_algorithm (self):
 
+        hca = challenges.HillClimbing()
+
+        self.assertEqual(hca.find_pahts_iterative(data.hill_climbing_grid_simple),31)
+        self.assertEqual(hca.first_a, 29)
+
+
+
+        
 
 
 

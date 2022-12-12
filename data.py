@@ -293,3 +293,11 @@ Monkey 3:
     If false: throw to monkey 1"""
 
 
+hill_climbing_grid_simple = """Sabqponm
+abcryxxl
+accszExk
+acctuvwj
+abdefghi"""
+
+
+
