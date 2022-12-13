@@ -216,8 +216,9 @@ class TestChallenges(unittest.TestCase):
 
             self.assertEqual(ds.sum_indexes_right_order(data.signal_simple), 13)
 
+            self.assertEqual(ds.get_decoder_key(data.signal_simple), 140)
 
-            self.assertEqual(ds.sum_indexes_right_order(data.signal_simple1), 48)
+
 
 
 if __name__ == '__main__':

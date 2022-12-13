@@ -899,7 +899,6 @@ class DistressSignal:
         result = [self._transforn_to_list(x) for x in elements]
         return result
 
-
     def _decode_input(self, input:str)->list[tuple[list,list]]:
         pairs = input.split('\n\n')
 
@@ -925,30 +924,20 @@ class DistressSignal:
         return nested_list
 
     def _check_right_order(self, list1:list, list2:list) -> bool:
-        
 
         result = None
 
-        for ele1, ele2 in zip(list1, list2):
+        for ele1, ele2 in zip(list1, list2): # If both list lets checks this lists.
             if isinstance(ele1, list) and isinstance(ele2, list):
-                                  
                 result = self._check_right_order(ele1, ele2)
 
             if isinstance(ele1, list) and isinstance(ele2, int):
-             
                 result =  self._check_right_order(ele1, [ele2])
-
-                # first_item = self._get_first_item_in_nested_list(ele1)
-                # result = first_item <= ele2 if first_item else True
 
             if isinstance(ele1, int) and isinstance(ele2, list):
                 result = self._check_right_order([ele1], ele2)
-
-                # first_item = self._get_first_item_in_nested_list(ele2)
-                # result = ele1 <= first_item if first_item else False
             
             if isinstance(ele1, int) and isinstance(ele2, int):
-
                 if ele1 < ele2:
                     result = True
                 if ele1 > ele2:
@@ -962,26 +951,40 @@ class DistressSignal:
                 result = False
             if len(list1) < len(list2): 
                 result = True
-                
-        return result
 
+        return result
 
     def sum_indexes_right_order(self, input:str) -> int:
         list_pairs = self._decode_input(input)
         sum_of_index = 0
         for idx, pair in enumerate(list_pairs):
             list1, list2 = pair
-            try:
-                is_in_right_order =  self._check_right_order(list1,list2)
-                if is_in_right_order != None:
-                    sum_of_index += (idx + 1) if is_in_right_order else 0
-            except:
-                
-                print(list1)
-                print(list2)
-
-
-
+            is_in_right_order =  self._check_right_order(list1,list2)
+            if is_in_right_order != None:
+                sum_of_index += (idx + 1) if is_in_right_order else 0
+   
         return sum_of_index
+
+    def _sort_values(self, values: list, is_lower_than:callable) -> list:
+        # Basic bubble algorithm 
+        for i in range(len(values)):
+            for j in range(i + 1, len(values)):
+                if not is_lower_than(values[i], values[j]):
+                    values[i], values[j] = values[j], values[i]
+        return values
+
+    def get_decoder_key(self, input:str) -> int:
+        list_pairs = self._decode_input(input)
+        all_messages = [x for tupla in list_pairs for x in tupla]
+
+        all_messages.append([[2]])
+        all_messages.append([[6]])
+
+        all_messages = self._sort_values(all_messages,self._check_right_order)
+        first_key = all_messages.index([[2]]) + 1
+        second_key = all_messages.index([[6]]) + 1
+
+        return first_key * second_key
+
 
 
