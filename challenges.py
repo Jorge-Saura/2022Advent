@@ -993,13 +993,9 @@ class RegolithSource:
         result = list()
         vertices = line.split(' -> ')
         for vertice in vertices:
-
             
             x, y = vertice.split(',')
             x, y = int(x), int(y)
-
-            if x == 10 and y == 5:
-                i = 0
  
             if  result:
                 last_vertice = result[-1]
@@ -1020,8 +1016,8 @@ class RegolithSource:
                 result.append((x,y))
 
 
-
-        return result
+        
+        return set(result)
 
     def _decode_input(self, input:str) -> list[tuple[int,int]]:
         lines = input.split('\n')
@@ -1033,6 +1029,7 @@ class RegolithSource:
 
             result.extend(points)
 
+        result = list(set(result))
         return result
 
     def _move_sand(self, point:tuple[int,int], points: list[tuple[int,int]]) -> tuple[int,int]:
@@ -1051,11 +1048,11 @@ class RegolithSource:
 
         points.append((500,0))
 
-        max_x = max(points,key = lambda x: x[0])[0]
-        min_x = min(points,key = lambda x: x[0])[0]
+        max_x = max(points + snow + last_path,key = lambda x: x[0])[0]
+        min_x = min(points + snow + last_path,key = lambda x: x[0])[0]
 
-        max_y = max(points,key = lambda x: x[1])[1]
-        min_y = min(points,key = lambda x: x[1])[1]
+        max_y = max(points + snow + last_path,key = lambda x: x[1])[1]
+        min_y = min(points + snow + last_path,key = lambda x: x[1])[1]
 
         ancho = max_x - min_x + 3
         alto = max_y - min_y + 3
@@ -1077,13 +1074,57 @@ class RegolithSource:
             x = x - min_x + 1
             m[y][x] = '~'
 
-        with open('rockwall.txt','w',encoding = 'utf-8') as f:
+        with open('rockwall_day14.txt','w',encoding = 'utf-8') as f:
             for row in m:
                 line = ''.join(row) + '\n'
                 f.write(line)
         
         return m
    
+    def _print_walls_with_floor(self, rocks:list[tuple[int,int]], free_points:list[tuple[int,int]]):
+        points = rocks
+
+        max_x = max(points + free_points,key = lambda x: x[0])[0]
+        min_x = min(points + free_points,key = lambda x: x[0])[0]
+
+        max_y = max(points + free_points,key = lambda x: x[1])[1]
+        min_y = min(points + free_points,key = lambda x: x[1])[1]
+
+        # ancho = max_x - min_x + 3
+        alto = max_y + 2
+
+        ancho = 1 + (2 *(alto - 1))
+
+        m = [['.'] * ancho for _ in range(alto-1)] 
+        m.append(['#'] * ancho)
+
+        start = (ancho//2) 
+        off_set = 500 - start
+        
+        for i in range(1, alto):
+            m[i-1][start] = 'o'
+            for j in range(1,i):
+                m[i-1][start - j] = 'o'
+                m[i-1][start + j] = 'o'
+
+        for point in points:
+            x,y = point
+            x = x - off_set
+            m[y][x] = '#'
+
+        for point in free_points:
+            x,y = point
+            x = x - off_set
+            m[y][x] = '.'
+
+
+        with open('rockwall_with_floor_day14.txt','w',encoding = 'utf-8') as f:
+            for row in m:
+                line = ''.join(row) + '\n'
+                f.write(line)
+        
+        return m
+
     def get_sand_packets(self, input:str) -> int:
         points = self._decode_input(input)
         rocks = points.copy()
@@ -1112,6 +1153,37 @@ class RegolithSource:
         self._print_walls(rocks, snow, last_path)
 
         return result - 1
+
+    def get_sand_packets_with_floor(self, input:str) -> int:
+        points = self._decode_input(input)
+        points.sort(key=lambda x: (x[0], x[1]))
+        rocks = points.copy()
+        free_points = list()
+        last_path = list()
+        
+        lowest_level = max(points, key = lambda x: x[1])[1] + 2
+        
+        all_sands = (lowest_level) * (lowest_level)
+
+        for level in range(0,lowest_level):
+            level_points = [x for x in points if x[1] == level]
+
+            for point in level_points:
+                x, y = point
+                left_point = (x - 1, y)
+                right_point = (x + 1, y)
+                if left_point in points and right_point in points:
+                    new_point = (x, y + 1)
+                    if new_point not in points and new_point[1] < lowest_level:
+                        points.append(new_point)
+                        free_points.append(new_point)
+
+       
+        self._print_walls_with_floor(rocks, free_points)
+
+        result = all_sands - len(rocks) - len(free_points)
+
+        return result
 
 
 
