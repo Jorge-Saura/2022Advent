@@ -218,7 +218,21 @@ class TestChallenges(unittest.TestCase):
 
             self.assertEqual(ds.get_decoder_key(data.signal_simple), 140)
 
+    def test_regolith_source(self):
 
+        rs = challenges.RegolithSource()
+
+        result = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (5, 1), (5, 2), (5, 3), (5, 4), (5, 5), (6, 5), (7, 5), (8, 5), (9, 5), (10, 5), (10, 4), (10, 3), (10, 2), (10, 1), (10, 0), (9, 0), (8, 0), (8, 1), (8, 2)]
+        self.assertEqual(rs._get_points('0,0 -> 5,0 -> 5,5 -> 10,5 -> 10,0 -> 8,0 -> 8,2'), result)
+        self.assertEqual(rs._get_points('498,4 -> 498,6 -> 496,6'),[(498,4), (498,5), (498,6), (497,6), (496,6)])
+
+        self.assertEqual(rs._decode_input(data.regolith_simple),[(498,4), (498,5), (498,6), (497,6), (496,6), (503,4), (502,4)])
+
+        self.assertEqual(rs.get_sand_packets(data.regolith_basic), 24)
+
+
+
+        
 
 
 if __name__ == '__main__':

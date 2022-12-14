@@ -927,26 +927,26 @@ class DistressSignal:
 
         result = None
 
-        for ele1, ele2 in zip(list1, list2): # If both list lets checks this lists.
+        for ele1, ele2 in zip(list1, list2): # If both are list lets checks this lists.
             if isinstance(ele1, list) and isinstance(ele2, list):
                 result = self._check_right_order(ele1, ele2)
 
-            if isinstance(ele1, list) and isinstance(ele2, int):
+            elif isinstance(ele1, list) and isinstance(ele2, int): # If second element is int we transform it to list and check.
                 result =  self._check_right_order(ele1, [ele2])
 
-            if isinstance(ele1, int) and isinstance(ele2, list):
+            elif isinstance(ele1, int) and isinstance(ele2, list):# If first element is int we transform it to list and check.
                 result = self._check_right_order([ele1], ele2)
             
-            if isinstance(ele1, int) and isinstance(ele2, int):
+            elif isinstance(ele1, int) and isinstance(ele2, int):
                 if ele1 < ele2:
                     result = True
                 if ele1 > ele2:
                     result = False
 
-            if result != None:
+            if result is not None:
                 break
 
-        if result == None:
+        if result is None:
             if len(list1) > len(list2):
                 result = False
             if len(list1) < len(list2): 
@@ -957,11 +957,9 @@ class DistressSignal:
     def sum_indexes_right_order(self, input:str) -> int:
         list_pairs = self._decode_input(input)
         sum_of_index = 0
-        for idx, pair in enumerate(list_pairs):
+        for idx, pair in enumerate(list_pairs,1):
             list1, list2 = pair
-            is_in_right_order =  self._check_right_order(list1,list2)
-            if is_in_right_order != None:
-                sum_of_index += (idx + 1) if is_in_right_order else 0
+            sum_of_index += idx if self._check_right_order(list1,list2) else 0
    
         return sum_of_index
 
@@ -985,6 +983,136 @@ class DistressSignal:
         second_key = all_messages.index([[6]]) + 1
 
         return first_key * second_key
+
+
+#--- Day 14: Regolith Reservoir ---
+
+class RegolithSource:
+
+    def _get_points(self, line:str) -> list[tuple[int,int]]:
+        result = list()
+        vertices = line.split(' -> ')
+        for vertice in vertices:
+
+            
+            x, y = vertice.split(',')
+            x, y = int(x), int(y)
+
+            if x == 10 and y == 5:
+                i = 0
+ 
+            if  result:
+                last_vertice = result[-1]
+                last_x, last_y = last_vertice
+
+                if x - last_x:
+                    #horizontal
+                    addition_sign = -1 if x - last_x < 0 else 1
+                    for i in range(addition_sign, x - last_x + addition_sign, addition_sign):
+                        result.append((last_x + i, last_y))
+                elif y - last_y:
+                    #vertical
+                    addition_sign = -1 if y - last_y < 0 else 1
+                    for i in range(addition_sign, y - last_y + addition_sign, addition_sign):
+                        result.append((last_x, last_y + i))
+
+            else: #first point
+                result.append((x,y))
+
+
+
+        return result
+
+    def _decode_input(self, input:str) -> list[tuple[int,int]]:
+        lines = input.split('\n')
+        result = list()
+        
+        for line in lines:
+            
+            points = self._get_points(line)
+
+            result.extend(points)
+
+        return result
+
+    def _move_sand(self, point:tuple[int,int], points: list[tuple[int,int]]) -> tuple[int,int]:
+        x, y = point
+        if (x, y + 1) not in points:
+            return (x, y + 1)
+        elif (x - 1, y + 1) not in points:
+            return (x - 1, y + 1)
+        elif (x + 1, y + 1) not in points:
+            return (x + 1, y + 1)
+
+        return (-1, -1)
+
+    def _print_walls(self, rocks:list[tuple[int,int]], snow:list[tuple[int,int]], last_path:list[tuple[int,int]]):
+        points = rocks
+
+        points.append((500,0))
+
+        max_x = max(points,key = lambda x: x[0])[0]
+        min_x = min(points,key = lambda x: x[0])[0]
+
+        max_y = max(points,key = lambda x: x[1])[1]
+        min_y = min(points,key = lambda x: x[1])[1]
+
+        ancho = max_x - min_x + 3
+        alto = max_y - min_y + 3
+
+        m = [['.'] * ancho for _ in range(alto)] 
+
+        for point in points:
+            x,y = point
+            x = x - min_x + 1
+            m[y][x] = '#'
+
+        for point in snow:
+            x,y = point
+            x = x - min_x + 1
+            m[y][x] = 'o'
+
+        for point in last_path:
+            x,y = point
+            x = x - min_x + 1
+            m[y][x] = '~'
+
+        with open('rockwall.txt','w',encoding = 'utf-8') as f:
+            for row in m:
+                line = ''.join(row) + '\n'
+                f.write(line)
+        
+        return m
+   
+    def get_sand_packets(self, input:str) -> int:
+        points = self._decode_input(input)
+        rocks = points.copy()
+        
+        lowest_level = max(points, key = lambda x: x[1])[1]
+
+        start = (500,0)
+        current_point = start
+        result = 0
+
+        snow = list()
+        last_path = list()
+
+        while current_point[1] < lowest_level:
+            current_point = start
+            result += 1 
+            
+            last_path = []
+            while (new_point:=self._move_sand(current_point, points)) != (-1,-1) and current_point[1] < lowest_level:
+                last_path.append(new_point)
+                current_point = new_point
+
+            points.append(current_point)
+            snow.append(current_point)
+            
+        self._print_walls(rocks, snow, last_path)
+
+        return result - 1
+
 
 
 
