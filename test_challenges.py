@@ -236,10 +236,30 @@ class TestChallenges(unittest.TestCase):
 
         self.assertEqual(rs.get_sand_packets_with_floor(data.regolith_basic1), 26831)
 
+    def test_beacon_exclusive_zone(self):
 
+        bez = challenges.BeaconExclusiveZone()
+        pairs = bez._decode_input(data.sensors_beacons)
+        self.assertEqual(len(pairs),14)
+        pair = pairs[0]
+        self.assertTrue(pair == challenges.SensorBeacon(2, 18, -2, 15))
 
+        pair = challenges.SensorBeacon(1, 1, 3, 3)
+        self.assertEqual(bez._line_in_range(0, pair), True)
+        self.assertEqual(bez._line_in_range(-1, pair), True)
+        self.assertEqual(bez._line_in_range(-4, pair), False)
+        self.assertEqual(bez._line_in_range(4, pair), True)
+        self.assertEqual(bez._line_in_range(-5, pair), False)
+        self.assertEqual(bez._line_in_range(6, pair), False)
 
-        
+        self.assertCountEqual(bez._get_points(1, pair, [12]),[1, 2, 0, 3, -1, 4, -2, 5, -3])
+
+        pair = challenges.SensorBeacon(0, 11, 2, 10)
+        self.assertCountEqual(bez._get_points(10, pair, [15]),[0, 1, -1, 2, -2])
+        self.assertCountEqual(bez._get_points(10, pair, [1,-2]),[0, -1, 2])
+
+        self.assertEqual(bez.check_line(data.sensors_beacons,10), 26)
+        self.assertEqual(bez.check_line(data.sensors_beacons1,2000000), 5040643)
 
 
 if __name__ == '__main__':
