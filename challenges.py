@@ -1265,7 +1265,6 @@ class BeaconExclusiveZone:
         
         return False
         
-
     def check_free_position(self, input:str, range_min:int, range_max:int) -> int:
 
         # There is only 1 free position so it must be surronding one of the sensors scope.
@@ -1305,7 +1304,86 @@ class BeaconExclusiveZone:
         return (x * 4000000) + y
 
     
+#--- Day 16: Proboscidea Volcanium ---
+
+class ValvesController:
+
+    valves = None
+    valves_links = None
+
+    #Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
+    def _decode_input(self, input:str):
+        lines = input.split('\n')
+        self.valves = dict()
+        self.valves_links = dict()
+
+        for line in lines:
+            valve, links = line.split(';')
+
+            key = valve.split()[1]
+            value = int(valve[valve.index('=') + 1:])
+            self.valves[key] = value
+
+            links = links.replace(' tunnels lead to valves ','').replace(' tunnel leads to valve ','').split(', ')
+            self.valves_links[key] = links
+
+            
+    def _get_all_paths(self, max_long: int) -> dict[str,int]:
+        # TODO. Best performance if we check not pass value max_long
+        nodes = list(self.valves.keys())
+
+        paths = dict()
+       
+        possible_paths =list()
+        visited_nodes = set()
+
+        for current in nodes:
+            actual_paths = []
+            all_nodes = [current]
+            visited_nodes = {current}
+
+            while all_nodes:
+                node = all_nodes.pop(0)
+
+                new_nodes = [x for x in self.valves_links[node] if x not in visited_nodes]
+                all_nodes.extend(new_nodes)  
+                new_paths = []
+                for n_node in new_nodes:
+                    if n_node not in visited_nodes:
+                        visited_nodes.add(n_node)
+                        if actual_paths:
+                            for path in [current_node_path for current_node_path in actual_paths if current_node_path.endswith(node)]:
+                                new_paths.append(path + '>' + n_node)
+                        else:
+                            new_paths.append(node + '>' + n_node)
+                
+                actual_paths.extend(new_paths)
+
+            possible_paths.extend(actual_paths)
+
+        possible_paths.sort()
+
+        with open('valves_paths.txt','w',encoding = 'utf-8') as f:
+            for path in possible_paths:
+                line = path + '\n'
+                f.write(line)
+        
+
+        for path in possible_paths:
+            path = path.replace('>','')
+            length = len(path)
+            paths[path[:2]+path[-2:]] = int(length / 2) - 1
+
+        return paths
+                
+    # def find_max_path(self, input:str, time:int, start:str) -> int:
+    #     self._decode_input(input)
+
+    #     pressures_after_time = list()
+
+    #     nodes = self.valves.keys()
 
 
 
 
+    #     return 1

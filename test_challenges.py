@@ -271,7 +271,18 @@ class TestChallenges(unittest.TestCase):
         self.assertEqual(bez.check_free_position(data.sensors_beacons, 0, 20)  , 56000011)
         self.assertEqual(bez.check_free_position(data.sensors_beacons1, 0, 4000000)  , 11016575214126)
 
+    def test_proboscidea_volcanium(self):
 
+        pv =  challenges.ValvesController()
+        pv._decode_input('Valve AA has flow rate=0; tunnels lead to valves DD, II, BB')
+        keys = list(pv.valves.keys())
+        self.assertEqual(keys[0], 'AA')
+
+        pv._decode_input(data.valves_paths)
+        paths = pv._get_all_paths(30)
+        self.assertEqual(len(paths),90)
+
+        
 
 if __name__ == '__main__':
 
