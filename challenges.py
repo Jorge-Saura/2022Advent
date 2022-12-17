@@ -1376,14 +1376,52 @@ class ValvesController:
 
         return paths
                 
-    # def find_max_path(self, input:str, time:int, start:str) -> int:
-    #     self._decode_input(input)
+    def find_max_path(self, input:str, time:int, starting_node:str) -> int:
+        self._decode_input(input)
 
-    #     pressures_after_time = list()
-
-    #     nodes = self.valves.keys()
-
+        all_paths = self._get_all_paths(30)
+        pressures_after_time = set()
 
 
+        power_nodes = [x for x in self.valves.keys() if self.valves[x] > 0]
 
-    #     return 1
+        ### First node can free pressure or not
+        nodes = [(x,time,0) if x == starting_node else (x,time - all_paths[starting_node + x],0) for x in power_nodes] 
+
+        while nodes:
+            current = nodes.pop(0)
+            current_path = current[0]
+            current_node = current_path[-2:]
+            current_time = current[1]
+            current_pressure = current[2]
+
+            if current_path == 'DD>BB>JJ>HH>EE>CC' :
+                n = 0
+
+            current_time -= 1 # power on
+            current_pressure += current_time * self.valves[current_node] # add all pressure
+            pressures_after_time.add(current_pressure)
+            
+            for n in power_nodes:
+                
+                if current_path.find(n) == -1:
+                    new_path = current_path + '>' + n
+                    new_time = current_time - all_paths.get(current_node +  n, 0)
+                    if new_time > 0:
+                        nodes.append((new_path, new_time, current_pressure))
+
+        return max(pressures_after_time)
+
+
+    def find_max_path_concurrent_paths(self, input:str, time:int, starting_node:str, num_concurrents:int) -> int:
+        self._decode_input(input)
+
+        all_paths = self._get_all_paths(30)
+        pressures_after_time = set()
+
+
+        power_nodes = [x for x in self.valves.keys() if self.valves[x] > 0]
+
+   
+
+        return max(pressures_after_time)

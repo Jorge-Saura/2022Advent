@@ -282,7 +282,10 @@ class TestChallenges(unittest.TestCase):
         paths = pv._get_all_paths(30)
         self.assertEqual(len(paths),90)
 
-        
+        self.assertEqual(pv.find_max_path(data.valves_paths,30,'AA'), 1651)
+
+        self.assertEqual(pv.find_max_path(data.valves_paths1,30,'AA'), 1580) 
+
 
 if __name__ == '__main__':
 
