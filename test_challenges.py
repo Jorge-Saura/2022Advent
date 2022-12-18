@@ -279,12 +279,16 @@ class TestChallenges(unittest.TestCase):
         self.assertEqual(keys[0], 'AA')
 
         pv._decode_input(data.valves_paths)
-        paths = pv._get_all_paths(30)
+        paths = pv._get_all_paths()
         self.assertEqual(len(paths),90)
 
         self.assertEqual(pv.find_max_path(data.valves_paths,30,'AA'), 1651)
 
         self.assertEqual(pv.find_max_path(data.valves_paths1,30,'AA'), 1580) 
+
+        self.assertEqual(pv.find_max_in_concurrent_paths(data.valves_paths,26,'AA',2), 1707)
+        self.assertEqual(pv.find_max_in_concurrent_paths(data.valves_paths1,26,'AA',2), 2213)
+
 
 
 if __name__ == '__main__':
