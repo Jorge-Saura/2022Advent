@@ -289,6 +289,45 @@ class TestChallenges(unittest.TestCase):
         self.assertEqual(pv.find_max_in_concurrent_paths(data.valves_paths,26,'AA',2), 1707)
         self.assertEqual(pv.find_max_in_concurrent_paths(data.valves_paths1,26,'AA',2), 2213)
 
+    def test_pyroclastic_flow(self):
+
+        rock_hor = challenges.RockHorizontal(0, 0)
+        self.assertCountEqual(rock_hor.points,{(0,0), (1,0), (2,0), (3,0)})
+
+        rock_cross = challenges.RockCross(0, 0)
+        self.assertCountEqual(rock_cross.points,{(0,1), (1,1), (2,1), (1,0), (1,1), (1,2)})
+
+        rock_simetric_l = challenges.RockSimetricL(0, 0)
+        self.assertCountEqual(rock_simetric_l.points,{(0,0), (1,0), (2,0), (2,1), (2,2)})
+
+        rock_square = challenges.RockSquare(0, 0)
+        self.assertCountEqual(rock_square.points,{(0,0), (1,0), (0,1), (1,1)})
+
+        c = challenges.Chamber()
+        self.assertTrue(c.points_intersect_vertically_with_chamber([(1,1),(1,2)]))
+        self.assertFalse(c.points_intersect_vertically_with_chamber([(3,2),(3,3)]))
+
+        c.levels.append([-1,0,0,0,0,0,0])
+        self.assertTrue(c.points_intersect_vertically_with_chamber([(3,1),(3,2)]))
+        self.assertFalse(c.points_intersect_vertically_with_chamber([(3,2),(4,2)]))
+        self.assertTrue(c.points_intersect_vertically_with_chamber([(0,2),(1,2)]))
+        self.assertTrue(c.points_intersect_horizontally_with_chamber([(1,2),(1,1)],-1))
+
+        c = challenges.Chamber()
+        c.add_points_to_chamber([(1,1),(1,2)])    
+        self.assertEqual(len(c.levels),3)
+        self.assertEqual(c.levels[2],[0,1,0,0,0,0,0])
+
+        c = challenges.ChamberController()
+
+        self.assertEqual(c.fall_rocks(1, '>', print_movements=True),1)
+
+        self.assertEqual(c.fall_rocks(2022, data.gas_pattern1, print_movements=False),3048)
+
+        # self.assertEqual(c.fall_rocks(1000000000000, data.gas_pattern, print_movements=False),1514285714288)
+
+        
+
 
 
 if __name__ == '__main__':

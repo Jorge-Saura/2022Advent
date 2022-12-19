@@ -1306,8 +1306,6 @@ class BeaconExclusiveZone:
     
 #--- Day 16: Proboscidea Volcanium ---
 
-from itertools import permutations 
-
 class ValvesController:
 
     valves = None
@@ -1433,3 +1431,239 @@ class ValvesController:
 
         return finded_value
 
+
+#--- Day 17: Pyroclastic Flow --
+
+class Rock:
+    points = None
+    left_wall = 0
+    right_wall = 6
+    
+    
+    def move_horizontal(self, value:int): 
+
+        left = min(self.points, key = lambda x: x[0])[0]
+        right = max(self.points, key = lambda x: x[0])[0] 
+        if self.left_wall <= left + value and right + value <= self.right_wall:
+            self.points = [(x + value, y) for x, y in self.points]
+
+    def move_vertically(self, value:int):
+
+        self.points = [(x, y + value) for x, y in self.points]
+
+
+
+class RockHorizontal(Rock):
+
+    def __init__(self, left:int, bottom:int) -> None:
+        super().__init__()
+
+        self.points = list({(left + i, bottom) for i in range(4)})
+
+class RockCross(Rock):
+
+    def __init__(self, left:int, bottom:int) -> None:
+        super().__init__()
+
+        horizontal = {(left + i, bottom + 1) for i in range(3)}
+        vertical = {(left + 1, bottom + i) for i in range(3)}
+        self.points = list(horizontal.union(vertical))
+
+class RockSimetricL(Rock):
+
+    def __init__(self, left:int, bottom:int) -> None:
+        super().__init__()
+        
+        horizontal = {(left + i, bottom) for i in range(3)}
+        vertical = {(left + 2, bottom + i) for i in range(1, 3)}
+        self.points = list(horizontal.union(vertical))
+
+class RockVertical(Rock):
+
+    def __init__(self, left:int, bottom:int) -> None:
+        super().__init__()
+
+        self.points = list({(left, bottom + i) for i in range(4)})
+
+class RockSquare(Rock):
+
+    def __init__(self, left:int, bottom:int) -> None:
+        super().__init__()
+
+        first_line = {(left + i, bottom) for i in range(2)}
+        second_line = {(left + i, bottom + 1) for i in range(2)}
+        self.points = list(first_line.union(second_line))
+
+
+class RocksGenerator:
+    step = -1
+
+    def create_rock(self, starting_point:tuple[int,int]) -> Rock:
+        
+        x,y = starting_point
+
+        self.step += 1
+        rock_type = self.step % 5
+
+        if rock_type == 0: return RockHorizontal(x,y)
+        if rock_type == 1: return RockCross(x,y)
+        if rock_type == 2: return RockSimetricL(x,y)
+        if rock_type == 3: return RockVertical(x,y)
+        if rock_type == 4: return RockSquare(x,y)
+
+
+class Chamber:
+    levels = None
+
+    max_horizontal = 7
+    min_horizontal = 0
+    floor = -1
+    empty = 0
+    rock = 1
+
+    file_clear = True
+
+    def __init__(self) -> None:
+         # 0,0 left-bottom point
+         # 0,6 right-bottom point
+         # We store list of arrays of lenth = 7 + 2 (walls)
+         # each array corresponds to a level above the floor
+         # 0 --> empty spaces (.)
+         # 1 --> filled space (#)
+         # -1 --> floor       (-) 
+         # -2 --> wall        (|)
+         # -3 --> corner      (+)
+
+         level0 = [self.floor for _ in range(self.max_horizontal)]
+         self.levels = list()
+         self.levels.append(level0)
+         
+    def get_max_level(self) -> int:
+        return len(self.levels) - 1
+
+    def points_intersect_vertically_with_chamber(self, points:list[tuple[int,int]]) -> bool:
+
+        max_y = self.get_max_level()
+        points = [(x, y - 1) for x, y in points if y - 1 <= max_y]
+
+        for x, y in points:
+            if self.levels[y][x] != 0:
+                return True
+
+        return False
+
+
+    def points_intersect_horizontally_with_chamber(self,  points:list[tuple[int,int]], direction:int) -> bool:
+        points.sort(key= lambda x: x[0])
+
+        min_x = points[0][0]
+        max_x = points[-1][0]
+        max_y = self.get_max_level()
+        
+        if self.min_horizontal <= min_x + direction and max_x + direction < self.max_horizontal:
+            points = [(x + direction, y) for x, y in points if y <= max_y]
+
+            for x, y in points:
+                if self.levels[y][x] != 0:
+                    return True
+
+
+        return False
+        
+
+    def add_points_to_chamber(self, points:list[tuple[int,int]]):
+        
+        points.sort(key= lambda x: x[1])
+
+        for  x, y in points:
+            if y > self.get_max_level():
+                self.levels.append([0] * self.max_horizontal)
+            
+            self.levels[y][x] = 1
+
+
+    def save_snapshot(self):
+        mode = 'w' if self.file_clear else 'a'
+        self.file_clear = False
+        with open('Floor.txt', mode) as f:
+            inversed = self.levels.copy()
+            inversed.reverse()
+            f.write('\n\n')
+            for i in range(0,len(inversed)):
+
+                char_level = ['.'] * self.max_horizontal
+                for idx, value in enumerate(inversed[i]):
+                    if value != 0:
+                        if value == -1 : char_level[idx] = '-' 
+                        if value == 1 : char_level[idx] = '#'
+                        if value == 2 : char_level[idx] = '@'
+                text_level = ''.join(char_level)
+                if i == len(inversed)-1:
+                    text_level = '+' + text_level + '+' + '\n'
+                else:
+                    text_level = '|' + text_level + '|' + '\n'
+                f.write(text_level) 
+    
+    def add_movement_to_chamber(self, points:list[tuple[int,int]]):
+        
+        points.sort(key= lambda x: x[1])
+
+        for  x, y in points:
+            while y > self.get_max_level():
+                self.levels.append([0] * self.max_horizontal)
+            
+            self.levels[y][x] = 2
+        
+
+    def save_snapshot_with_movement(self, points:list[tuple[int,int]]):
+        original = self.levels.copy()
+
+        self.add_movement_to_chamber(list(points))
+
+        self.save_snapshot()
+
+        self.levels = original.copy()
+
+
+class ChamberController:
+
+    def fall_rocks(self, num_rocks:int, gas:str, print_movements = False) -> int:
+
+        chamber =  Chamber()
+        generator = RocksGenerator()
+        direction ={'<': -1, '>': 1 }
+
+        gas_index = 0
+        gas_length= len(gas)
+
+        for idx in range(num_rocks):
+            
+            rock = generator.create_rock((2, (chamber.get_max_level() + 1) + 3))
+            can_continue = True
+            while can_continue:
+                if print_movements:
+                    chamber.save_snapshot_with_movement(rock.points)
+
+                dir = gas[gas_index % gas_length]
+                value = direction[dir]
+                if not chamber.points_intersect_horizontally_with_chamber(rock.points, value):
+                    rock.move_horizontal(value)
+                gas_index += 1
+
+                if print_movements:
+                    chamber.save_snapshot_with_movement(rock.points)
+
+                if not chamber.points_intersect_vertically_with_chamber(rock.points):
+                    rock.move_vertically(-1)
+                else:
+                    can_continue = False
+                
+
+
+            chamber.add_points_to_chamber(rock.points)
+
+
+            
+        if print_movements:
+            chamber.save_snapshot()
+        return chamber.get_max_level()
