@@ -326,7 +326,22 @@ class TestChallenges(unittest.TestCase):
 
         self.assertEqual(cc.fall_rocks(1000000000000, data.gas_pattern1),1504093567249)
 
+    def test_boiling_boulders(self):
 
+        bc = challenges.BouldersController()
+        coords = bc._decode_input(data.obsidian_cubes)
+        self.assertEqual(len(coords),13)
+        self.assertEqual(coords[0],(2,2,2))
+
+        self.assertEqual(bc._sum_tuple((0,1,0),(0,1,1)),(0,2,1))
+
+        self.assertEqual(bc.count_areas(data.obsidian_simple), 10)
+
+        self.assertEqual(bc.count_areas(data.obsidian_cubes), 64)
+
+        self.assertEqual(bc.count_areas(data.obsidian_complex), 3396)
+
+        
         
 
 

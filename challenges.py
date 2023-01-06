@@ -1660,6 +1660,75 @@ class ChamberController:
         return total_height
 
 
+#--- Day 18: Boiling Boulders ---
 
+class BouldersController:
+
+    def _decode_input(self, input:str):
+        lines = input.split('\n')
+
+        coordinates = list()
+
+        for line in lines:
+            x, y, z = [int(num) for num in line.split(',')]
+            coordinates.append((x, y, z))
+
+        return coordinates
+
+    def _sum_tuple(self, point1:tuple[int], point2:tuple[int]) -> tuple[int]:
+        return tuple(i+j for i,j in zip(point1,point2))
+
+
+    def _get_sides(self, point:tuple[int]) -> list[tuple[tuple[int]]]:
+        # 6 sides
+        sides = list()
+
+        # first side
+        # 0,0,0 | 0,1,0 | 1,1,0 | 1,0,0
+        side1 = (point, self._sum_tuple(point, (0,1,0)), self._sum_tuple(point, (1,1,0)), self._sum_tuple(point, (1,0,0)))
+
+        # second side
+        # 1,0,0 | 1,1,0 | 1,1,1 | 1,0,1
+        side2 = (self._sum_tuple(point, (1,0,0)), self._sum_tuple(point, (1,1,0)), self._sum_tuple(point, (1,1,1)), self._sum_tuple(point, (1,0,1)))
+
+        # third side
+        # 0,0,1 | 0,1,1 | 1,1,1 | 1,0,1
+        side3 = (self._sum_tuple(point, (0,0,1)), self._sum_tuple(point, (0,1,1)), self._sum_tuple(point, (1,1,1)), self._sum_tuple(point, (1,0,1)))
+
+        # fouth side
+        # 0,0,0 | 0,1,0 | 0,1,1 | 0,0,1
+        side4 = (self._sum_tuple(point, (0,0,0)), self._sum_tuple(point, (0,1,0)), self._sum_tuple(point, (0,1,1)), self._sum_tuple(point, (0,0,1)))
+
+        # fith side
+        # 0,1,0 | 1,1,0 | 1,1,1 | 0,1,1
+        side5 = (self._sum_tuple(point, (0,1,0)), self._sum_tuple(point, (1,1,0)), self._sum_tuple(point, (1,1,1)), self._sum_tuple(point, (0,1,1)))
+
+        # sixth side
+        # 0,0,0 | 1,0,0 | 1,0,1 | 0,0,1
+        side6 = (self._sum_tuple(point, (0,0,0)), self._sum_tuple(point, (1,0,0)), self._sum_tuple(point, (1,0,1)), self._sum_tuple(point, (0,0,1)))
+
+        return [side1, side2, side3, side4, side5, side6]
+
+    def count_areas(self, input:str) -> int:
+        cubes = self._decode_input(input)
+
+        all_sides = dict()
+        for cube in cubes:
+            sides = self._get_sides(cube)
+
+            for side in sides:
+                all_sides[side] = all_sides.get(side, 0) + 1
+
+        
+        free_sides = [1 for value in all_sides.values() if value == 1]
+
+        return len(free_sides)
+
+
+    # para cada punto:
+    #   obtener las 6 caras
+    #   introducirlas en un dict con value 1
+    #   si la cara se repite +1
+    #   contar solo las caras con value = 1
 
 
