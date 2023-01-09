@@ -338,12 +338,14 @@ class TestChallenges(unittest.TestCase):
         self.assertEqual(bc.count_areas(data.obsidian_simple), 10)
 
         self.assertEqual(bc.count_areas(data.obsidian_cubes), 64)
-
+        self.assertEqual(bc.count_areas(data.obsidian_empty_cube), 204)
+        self.assertEqual(bc.count_areas(data.obsidian_empty_star), 36)
         self.assertEqual(bc.count_areas(data.obsidian_complex), 3396)
 
-        
-        
-
+        self.assertEqual(bc.count_superficial_areas(data.obsidian_empty_cube), 150)
+        self.assertEqual(bc.count_superficial_areas(data.obsidian_empty_star), 30)
+        self.assertEqual(bc.count_superficial_areas(data.obsidian_cubes), 58)
+        self.assertEqual(bc.count_superficial_areas(data.obsidian_complex), 2044)
 
 
 if __name__ == '__main__':
