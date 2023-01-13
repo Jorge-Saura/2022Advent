@@ -50,6 +50,9 @@ class Blueprint:
             return False
         if material_needed == self.obsidian_robot and self.robots[2] > self.max_geode:
             return False
+
+        #
+
         return all(True if m <= r else False for m, r in zip(material_needed, self.resources))
 
     def create_ore_robot(self) -> list[int]:
@@ -122,15 +125,31 @@ class BlueprintsController:
         finished_ways = list()
         max_geodes = 0 
 
-        cut_paths = False
 
         while ways:
             current = ways.pop(0)
-            cut_paths = False
 
             if current.minutes == 0:
                 max_geodes = max(max_geodes, current.resources[3])
                 finished_ways.append(current)
+                continue
+            
+            #espera para construir una geoda
+            # si recursos de obsidian + produccion de obsidiana >= obsidiana para geoda
+            # no gastes en otra cosa 
+            if current.resources[2] + current.robots[2] >= current.geode_robot[2]:
+                current.update_resources()
+                current.minutes -= 1
+                ways.append(current)
+                continue
+
+            #espera para construir una obsidiana
+            # si recursos de barro + produccion de barro >= barro para obsidiana
+            # no gastes en otra cosa 
+            if current.resources[1] + current.robots[1] >= current.obsidian_robot[1]:
+                current.update_resources()
+                current.minutes -= 1
+                ways.append(current)
                 continue
 
             # geode robot
@@ -142,7 +161,7 @@ class BlueprintsController:
                 new_blueprint.robots = new_production
                 new_blueprint.minutes -= 1
                 ways.append(new_blueprint)
-                cut_paths = True
+
 
             # obsidian robot
             if current.can_create_robot(current.obsidian_robot):
@@ -153,7 +172,6 @@ class BlueprintsController:
                 new_blueprint.robots = new_production
                 new_blueprint.minutes -=1
                 ways.append(new_blueprint)
-                cut_paths = True
 
             # clay robot
             if current.can_create_robot(current.clay_robot):
@@ -164,7 +182,6 @@ class BlueprintsController:
                 new_blueprint.robots = new_production
                 new_blueprint.minutes -= 1
                 ways.append(new_blueprint)
-                cut_paths = True
 
             # ore robot
             if current.can_create_robot(current.ore_robot):
@@ -175,12 +192,13 @@ class BlueprintsController:
                 new_blueprint.robots = new_production
                 new_blueprint.minutes -= 1
                 ways.append(new_blueprint)
-                cut_paths = True
 
-            if not cut_paths:
-                current.update_resources()
-                current.minutes -= 1
-                ways.append(current)
+
+            # Si tengo los recursos necesarios para construir he de construir, no hacerlo no es mejor jugada que hacerlo
+            # if current.resources[0] < current.max_ore and current.resources[1] < current.max_clay and current.resources[2] < current.max_obsidian:
+            current.update_resources()
+            current.minutes -= 1
+            ways.append(current)
 
 
 
