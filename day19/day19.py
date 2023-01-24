@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 
+import math
+
+
+
 class Blueprint:
     id = 0
     ore_robot = None # [#ore, #clay, #obsidian]
@@ -35,60 +39,60 @@ class Blueprint:
 
     def _copy(self) -> Blueprint:
         b = Blueprint(self.id, self.ore_robot, self.clay_robot, self.obsidian_robot, self.geode_robot)
-        b.robots = self.robots
-        b.resources = self.resources
+        b.robots = self.robots.copy()
+        b.resources = self.resources.copy()
         b.minutes = self.minutes
 
         return b
 
 
 
-    def can_create_robot(self, material_needed:list[int]) -> bool:
-        if material_needed == self.ore_robot and self.robots[0] > self.max_ore:
-            return False
-        if material_needed == self.clay_robot and self.robots[1] > self.max_clay:
-            return False
-        if material_needed == self.obsidian_robot and self.robots[2] > self.max_geode:
-            return False
+    # def can_create_robot(self, material_needed:list[int]) -> bool:
+    #     if material_needed == self.ore_robot and self.robots[0] >= self.max_ore:
+    #         return False
+    #     if material_needed == self.clay_robot and self.robots[1] >= self.max_clay:
+    #         return False
+    #     if material_needed == self.obsidian_robot and self.robots[2] >= self.max_geode:
+    #         return False
 
-        #
+    #     #
 
-        return all(True if m <= r else False for m, r in zip(material_needed, self.resources))
+    #     return all(True if m <= r else False for m, r in zip(material_needed, self.resources))
 
-    def create_ore_robot(self) -> list[int]:
-        ore, clay, obs, geo = self.robots
-        ore += 1
+    # def create_ore_robot(self) -> list[int]:
+    #     ore, clay, obs, geo = self.robots
+    #     ore += 1
 
-        self.resources = [re - ro for re, ro in zip(self.resources, self.ore_robot)]
-        return [ore, clay, obs, geo]
+    #     self.resources = [re - ro for re, ro in zip(self.resources, self.ore_robot)]
+    #     return [ore, clay, obs, geo]
 
-    def create_clay_robot(self) -> list[int]:
-        ore, clay, obs, geo = self.robots
-        clay += 1
+    # def create_clay_robot(self) -> list[int]:
+    #     ore, clay, obs, geo = self.robots
+    #     clay += 1
 
-        self.resources = [re - ro for re, ro in zip(self.resources, self.clay_robot)]
-        return [ore, clay, obs, geo]
+    #     self.resources = [re - ro for re, ro in zip(self.resources, self.clay_robot)]
+    #     return [ore, clay, obs, geo]
 
-    def create_obsidian_robot(self) -> list[int]:
-        ore, clay, obs, geo = self.robots
-        obs += 1
+    # def create_obsidian_robot(self) -> list[int]:
+    #     ore, clay, obs, geo = self.robots
+    #     obs += 1
 
-        self.resources = [re - ro for re, ro in zip(self.resources, self.obsidian_robot)]
-        return [ore, clay, obs, geo]
+    #     self.resources = [re - ro for re, ro in zip(self.resources, self.obsidian_robot)]
+    #     return [ore, clay, obs, geo]
 
-    def create_geode_robot(self) -> list[int]:
-        ore, clay, obs, geo = self.robots
-        geo += 1
+    # def create_geode_robot(self) -> list[int]:
+    #     ore, clay, obs, geo = self.robots
+    #     geo += 1
 
-        self.resources = [re - ro for re, ro in zip(self.resources, self.geode_robot)]
-        return [ore, clay, obs, geo]
+    #     self.resources = [re - ro for re, ro in zip(self.resources, self.geode_robot)]
+    #     return [ore, clay, obs, geo]
 
-    def update_resources(self): # [#ore, #clay, #obsidian, #geode]
-        self.resources = [r + p for r, p in zip(self.resources, self.robots)]
+    # def update_resources(self): # [#ore, #clay, #obsidian, #geode]
+    #     self.resources = [r + p for r, p in zip(self.resources, self.robots)]
 
-    def produce_resources(self) -> list[int]: # [#ore, #clay, #obsidian, #geode]
-        #devolvemos los recursos generados en 1 minuto que se deben sumar a los recursos generales
-        pass
+    # def produce_resources(self) -> list[int]: # [#ore, #clay, #obsidian, #geode]
+    #     #devolvemos los recursos generados en 1 minuto que se deben sumar a los recursos generales
+    #     pass
 
 class BlueprintsController:
 
@@ -97,7 +101,6 @@ class BlueprintsController:
         
         lines = input.split('\n')
         blueprints = list()
-#Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.
         for line in lines:
             sentences = line.split('.')
             
@@ -120,93 +123,119 @@ class BlueprintsController:
         return blueprints
 
     def _get_blueprint_production(self, blueprint:Blueprint) -> int:
-        
-        ways = [blueprint]
-        finished_ways = list()
-        max_geodes = 0 
-
-
-        while ways:
-            current = ways.pop(0)
-
-            if current.minutes == 0:
-                max_geodes = max(max_geodes, current.resources[3])
-                finished_ways.append(current)
-                continue
             
-            #espera para construir una geoda
-            # si recursos de obsidian + produccion de obsidiana >= obsidiana para geoda
-            # no gastes en otra cosa 
-            if current.resources[2] + current.robots[2] >= current.geode_robot[2]:
-                current.update_resources()
-                current.minutes -= 1
-                ways.append(current)
-                continue
-
-            #espera para construir una obsidiana
-            # si recursos de barro + produccion de barro >= barro para obsidiana
-            # no gastes en otra cosa 
-            if current.resources[1] + current.robots[1] >= current.obsidian_robot[1]:
-                current.update_resources()
-                current.minutes -= 1
-                ways.append(current)
-                continue
-
-            # geode robot
-            if current.can_create_robot(current.geode_robot):
-                # create robot
-                new_blueprint = current._copy()
-                new_production = new_blueprint.create_geode_robot()
-                new_blueprint.update_resources()
-                new_blueprint.robots = new_production
-                new_blueprint.minutes -= 1
-                ways.append(new_blueprint)
+            ways = [blueprint]
+            finished_ways = list()
+            max_geodes = 0 
 
 
-            # obsidian robot
-            if current.can_create_robot(current.obsidian_robot):
-                # create robot
-                new_blueprint = current._copy()
-                new_production = new_blueprint.create_obsidian_robot()
-                new_blueprint.update_resources()
-                new_blueprint.robots = new_production
-                new_blueprint.minutes -=1
-                ways.append(new_blueprint)
+            while ways:
+                current = ways.pop(0)
 
-            # clay robot
-            if current.can_create_robot(current.clay_robot):
-                # create robot
-                new_blueprint = current._copy()
-                new_production = new_blueprint.create_clay_robot()
-                new_blueprint.update_resources()
-                new_blueprint.robots = new_production
-                new_blueprint.minutes -= 1
-                ways.append(new_blueprint)
+                ore_r, clay_r, obsidian_r, geode_r = current.robots
 
-            # ore robot
-            if current.can_create_robot(current.ore_robot):
-                # create robot
-                new_blueprint = current._copy()
-                new_production = new_blueprint.create_ore_robot()
-                new_blueprint.update_resources()
-                new_blueprint.robots = new_production
-                new_blueprint.minutes -= 1
-                ways.append(new_blueprint)
+                current_total_geodes = current.resources[3] + (current.minutes * current.robots[3])
+                max_geodes = max(max_geodes, current_total_geodes)
+
+                current_max_total_geodes = current_total_geodes + ((current.minutes * (current.minutes-1))//2)
+                if current_max_total_geodes < max_geodes:
+                    continue
+
+               
+                # option 1. wait to create new ore robot
+                if ore_r < current.max_ore: # Not over the maximum production necesary
+                    ore_resources = current.resources[0]
+                    ore_robot_cost = current.ore_robot[0]
+                    
+                    time_to_create_new_robot = 1 # robot creation takes 1 min
+                    if ore_robot_cost > ore_resources:
+                        time_to_create_new_robot += math.ceil((ore_robot_cost - ore_resources) / ore_r) # minutes neede to reach the resources
 
 
-            # Si tengo los recursos necesarios para construir he de construir, no hacerlo no es mejor jugada que hacerlo
-            # if current.resources[0] < current.max_ore and current.resources[1] < current.max_clay and current.resources[2] < current.max_obsidian:
-            current.update_resources()
-            current.minutes -= 1
-            ways.append(current)
+                    if current.minutes > time_to_create_new_robot:
+                        new_blueprint = current._copy()
+
+                        new_blueprint.minutes -= time_to_create_new_robot
+                        new_blueprint.resources = [new_blueprint.resources[0] + (ore_r*time_to_create_new_robot), new_blueprint.resources[1] + (clay_r*time_to_create_new_robot), new_blueprint.resources[2] + (obsidian_r*time_to_create_new_robot), new_blueprint.resources[3] + (geode_r*time_to_create_new_robot)]
+                        new_blueprint.robots[0] += 1 # adding the created resource
+                        new_blueprint.resources[0] -= ore_robot_cost # substracting the robot cost
+                        ways.append(new_blueprint)
+
+
+                # option 2. wait to create new clay robot
+                if clay_r < current.max_clay: # Not over the maximum production necesary
+                    ore_resources = current.resources[0] # we need ore resources to create clay robot
+                    clay_robot_cost = current.clay_robot[0]
+                    
+
+                    time_to_create_new_robot = 1 # robot creation takes 1 min
+                    if clay_robot_cost > ore_resources:
+                        time_to_create_new_robot += math.ceil((clay_robot_cost - ore_resources) / ore_r) # minutes neede to reach the resources
+
+                    if current.minutes > time_to_create_new_robot:
+                        new_blueprint = current._copy()
+
+                        new_blueprint.minutes -= time_to_create_new_robot
+                        new_blueprint.resources = [new_blueprint.resources[0] + (ore_r*time_to_create_new_robot), new_blueprint.resources[1] + (clay_r*time_to_create_new_robot), new_blueprint.resources[2] + (obsidian_r*time_to_create_new_robot), new_blueprint.resources[3] + (geode_r*time_to_create_new_robot)]
+                        new_blueprint.robots[1] += 1 # adding the created resource
+                        new_blueprint.resources[0] -= clay_robot_cost # substracting the robot cost
+                        ways.append(new_blueprint)
+
+
+                # option 3. wait to create new obsidian robot
+                if  clay_r > 0 and obsidian_r < current.max_obsidian: # Not over the maximum production necesary
+                    obsidian_resources_ore = current.resources[0] # we need ore resources to create obsidian robot
+                    obsidian_resources_clay = current.resources[1] # we need clay resources to create obsidian robot
+                    ore_robot_cost = current.obsidian_robot[0]
+                    clay_robot_cost = current.obsidian_robot[1]
+                    
+
+                    time_to_create_new_robot = 1 # robot creation takes 1 min
+                    if ore_robot_cost > obsidian_resources_ore or clay_robot_cost > obsidian_resources_clay:
+                        time_to_create_new_robot_ore = math.ceil((ore_robot_cost - obsidian_resources_ore) / ore_r) # minutes neede to reach the resources
+                        time_to_create_new_robot_clay = math.ceil((clay_robot_cost - obsidian_resources_clay) / clay_r) # minutes neede to reach the resources
+                        time_to_create_new_robot += max(time_to_create_new_robot_ore, time_to_create_new_robot_clay)
+
+                    if current.minutes > time_to_create_new_robot:                    
+                        new_blueprint = current._copy()
+
+                        new_blueprint.minutes -= time_to_create_new_robot
+                        new_blueprint.resources = [new_blueprint.resources[0] + (ore_r*time_to_create_new_robot), new_blueprint.resources[1] + (clay_r*time_to_create_new_robot), new_blueprint.resources[2] + (obsidian_r*time_to_create_new_robot), new_blueprint.resources[3] + (geode_r*time_to_create_new_robot)]
+                        new_blueprint.robots[2] += 1 # adding the created resource
+                        new_blueprint.resources[0] -= ore_robot_cost # substracting the robot cost
+                        new_blueprint.resources[1] -= clay_robot_cost # substracting the robot cost
+                        ways.append(new_blueprint)
+
+
+                # option 4. wait to create new geode robot
+                if  obsidian_r > 0: # Only check if is possible build geode robot, but buil all than you can
+                    geode_resources_ore = current.resources[0] # we need ore resources to create obsidian robot
+                    geode_resources_obs = current.resources[2] # we need clay resources to create obsidian robot
+                    ore_robot_cost = current.geode_robot[0]
+                    obs_robot_cost = current.geode_robot[2]
+                    
+
+                    time_to_create_new_robot = 1 # robot creation takes 1 min
+                    if ore_robot_cost > geode_resources_ore or obs_robot_cost > geode_resources_obs:
+                        time_to_create_new_robot_ore = math.ceil((ore_robot_cost - geode_resources_ore) / ore_r) # minutes neede to reach the resources
+                        time_to_create_new_robot_obs = math.ceil((obs_robot_cost - geode_resources_obs) / obsidian_r) # minutes neede to reach the resources
+                        time_to_create_new_robot += max(time_to_create_new_robot_ore, time_to_create_new_robot_obs)
+
+                    if current.minutes > time_to_create_new_robot:                    
+                        new_blueprint = current._copy()
+
+                        new_blueprint.minutes -= time_to_create_new_robot
+                        new_blueprint.resources = [new_blueprint.resources[0] + (ore_r*time_to_create_new_robot), new_blueprint.resources[1] + (clay_r*time_to_create_new_robot), new_blueprint.resources[2] + (obsidian_r*time_to_create_new_robot), new_blueprint.resources[3] + (geode_r*time_to_create_new_robot)]
+                        new_blueprint.robots[3] += 1 # adding the created resource
+                        new_blueprint.resources[0] -= ore_robot_cost # substracting the robot cost
+                        new_blueprint.resources[2] -= obs_robot_cost # substracting the robot cost
+                        ways.append(new_blueprint)
+ 
+
+            return max_geodes
 
 
 
-
-
-
-        max_b = max(finished_ways,key= lambda x: x.resources[3])
-        return max_b.resources[3]
 
 
     def geode_generator(self, input:str) -> int:
@@ -214,11 +243,11 @@ class BlueprintsController:
         bps = self._decode_input(input)
         max_bps = list()
 
-        for b in bps:
+        for idx, b in enumerate(bps,1):
             max_b = self._get_blueprint_production(b)
-            max_bps.append(max_b)
+            max_bps.append(idx * max_b)
 
-        m = max(max_bps)
+        m = sum(max_bps)
         return m
 
 
