@@ -13,14 +13,13 @@ class TestDay19(unittest.TestCase):
         self.assertEqual(b1.id, 1)
         self.assertEqual(b1.ore_robot, [4,0,0,0])
 
-        # bp = challenges.Blueprint(1,[1,1,2,1],[1,1,2,1],[1,1,2,1],[1,1,2,1])
-        # bp.resources = [2,2]
-        # self.assertEqual(bp.can_create_robot(bp.ore_robot), True)
-        # self.assertEqual(bp.can_create_robot([3,1]), False)
+        self.assertEqual(str(b1),"24_[0, 0, 0, 0]_[1, 0, 0, 0]")
 
-        # new_bp = bp._copy()
-        # self.assertEqual(new_bp.id, bp.id)
-        # self.assertEqual(new_bp.ore_robot, bp.ore_robot)
+        bp = challenges.Blueprint(1,[1,1,2,1],[1,1,2,1],[1,1,2,1],[1,1,2,1])
+ 
+        new_bp = bp._copy()
+        self.assertEqual(new_bp.id, bp.id)
+        self.assertEqual(new_bp.ore_robot, bp.ore_robot)
 
         
         max = bc.geode_generator(data.blueprints_basic)
@@ -29,9 +28,11 @@ class TestDay19(unittest.TestCase):
         max = bc.geode_generator(data.blueprints_complex)
         self.assertEqual(max, 1725)
 
+        max = bc.geode_generator2(data.blueprints_basic)
+        self.assertEqual(max, 56*62)
 
-
-
+        max = bc.geode_generator2(data.blueprints_complex)
+        self.assertEqual(max, 15510)
 
 if __name__ == "__main__":
 
