@@ -1,9 +1,18 @@
 import unittest
+import time
 
 import day19.day19 as challenges
 import day19.day19_data as data
 
 class TestDay19(unittest.TestCase):
+
+    def setUp(self):
+        self.startTime = time.time()
+
+    def tearDown(self):
+        t = time.time() - self.startTime
+        print('%s: %.3f' % (self.id(), t))        
+
 
     def test_blueprints(self):
 
@@ -36,4 +45,5 @@ class TestDay19(unittest.TestCase):
 
 if __name__ == "__main__":
 
-    unittest.main()
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestDay19)
+    unittest.TextTestRunner(verbosity=0).run(suite)    

@@ -93,7 +93,7 @@ class BlueprintsController:
                 current_total_geodes = current.resources[3] + (current.minutes * current.robots[3])
                 max_geodes = max(max_geodes, current_total_geodes)
 
-                current_max_total_geodes = current_total_geodes + ((current.minutes * (current.minutes-1))//2)
+                current_max_total_geodes = current_total_geodes + (((current.minutes-1) * (current.minutes-2))//2)
                 if current_max_total_geodes < max_geodes:
                     continue
 
