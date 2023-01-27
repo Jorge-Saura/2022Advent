@@ -51,7 +51,9 @@ class TestDay20(unittest.TestCase):
 
         self.assertEqual(do.get_coordenates(data.encrypted_file), 10763)
 
-        # self.assertEqual(do.get_coordenates2(data.encrypted_basic), 1623178306)
+        self.assertEqual(do.get_coordenates2(data.encrypted_basic), 1623178306)
+
+        self.assertEqual(do.get_coordenates2(data.encrypted_file), 4979911042808)
 
 if __name__ == "__main__":
 
