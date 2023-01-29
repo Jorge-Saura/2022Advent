@@ -25,8 +25,11 @@ class TestDay21(unittest.TestCase):
         self.assertEqual(value, 110181395003396)
 
 
+        value = mm.calculate_math2(data.monkeys_basic_yelling, 'root')
+        self.assertEqual(value, 301)
 
-
+        value = mm.calculate_math2(data.monkeys_complex_yelling, 'root')
+        self.assertEqual(value, 3721298272959)
 
 
 
