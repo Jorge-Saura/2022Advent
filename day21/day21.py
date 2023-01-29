@@ -104,10 +104,3 @@ class MonkeyMath:
             val2 = f2()
         
         return value
-
-# for each line:
-# def factory(line):
-
-#    def operation(line):
-#       if line.operation() == sum:
-#           return lambda: line.arg1() + line.arg()
