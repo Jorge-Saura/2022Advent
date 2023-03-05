@@ -132,6 +132,20 @@ class TestDay22(unittest.TestCase):
         p.move(13)
         self.assertEqual(p.x, 9, 'turn back left movement with wall at middle of the line reaching the wall')
 
+    def test_decode_input(self):
+        mm = challenges.MonkeyMap()
+
+        path = mm._decode_path('10R1L')
+        self.assertListEqual(path,[10,'R',1,'L'])
+
+    def test_get_password(self):
+        mm = challenges.MonkeyMap()
+        result = mm.get_path_password(data.force_field)
+        self.assertEqual(result, 6032)
+
+        result = mm.get_path_password(data.force_field_full)
+        self.assertEqual(result, 6032)
+
 if __name__ == "__main__":
 
     suite = unittest.TestLoader().loadTestsFromTestCase(TestDay22)
