@@ -3,10 +3,116 @@
 # Our gridLines starts in position 1.
 class gridRow:
 
-    def __init__(self, limit_left:int, limi_right:int, walls_positions:list[int]) -> None:
+    def __init__(self, limit_left:int, limit_right:int, walls_positions:list[int]) -> None:
         self.left = limit_left
-        self.right = limi_right
+        self.right = limit_right
         self.walls = walls_positions
+
+
+class pointer:
+    directions = ['R','D','L','U']
+
+    def __init__(self) -> None:
+        self.x = 1
+        self.y = 1
+        self.direction_index = 0 # R -> right, L -> left, U -> up, D -> down
+        self.grid_rows = list()
+
+
+    def _move_right(self, row:gridRow, movement: int) ->  int:
+
+        next_position = self.x + movement
+        # we have walls en the line
+        if row.walls:
+                # I have at least one wall in my wall.
+                if row.walls[-1] > self.x:
+                    next_wall = next(x for x in row.walls if x > self.x)
+                    return min(next_position, next_wall - 1)
+                # I dont have wall between my position and the end of the line
+                else:
+                    # I dont reach the end of the line
+                    if next_position <= row.right:
+                        return next_position
+                    # I have to turn around to the beginning of the line
+                    else:
+                        # first position is a wall, I can not move beyond the end of the grid
+                        if row.left == row.walls[0]:
+                            return row.right
+                        else:
+                            self.x = 1
+                            movement = next_position - (row.right + 1)
+                            return self._move_right(row,movement)
+                        
+        # there is no wall        
+        else:
+            # I have to turn around to the beginning of the line
+            # if next_position > row.right:
+            #     self.x = 1
+            #     movement = next_position - (row.right + 1)
+            #     return self._move_right(row,movement)
+            # # normal movement
+            # else:
+            next_position = next_position % (row.right - row.left + 1)
+            return next_position
+            
+    def _move_left(self, row:gridRow, movement: int) ->  int:
+
+        next_position = self.x - movement
+        # we have walls en the line
+        if row.walls:
+                # I have at least one wall in my line.
+                if row.walls[-1] > self.x:
+                    next_wall = next(x for x in row.walls if x > self.x)
+                    return min(next_position, next_wall - 1)
+                # I dont have wall between my position and the end of the line
+                else:
+                    # I dont reach the end of the line
+                    if next_position <= row.right:
+                        return next_position
+                    # I have to turn around to the beginning of the line
+                    else:
+                        # first position is a wall, I can not move beyond the end of the grid
+                        if row.left == row.walls[0]:
+                            return row.right
+                        else:
+                            self.x = 1
+                            movement = next_position - (row.right + 1)
+                            return self._move_right(row,movement)
+                        
+        # there is no wall        
+        else:
+            # # I have to turn around to the beginning of the line
+            # if next_position < row.left:
+            #     self.x = 1
+            #     movement = row.right + next_position - 1 #next_position - (row.right + 1)
+            #     return self._move_right(row,movement)
+            # # normal movement
+            # else:
+
+            return next_position
+            
+
+
+    def move(self, movement) -> None:
+        if isinstance(movement,str):
+            #gira
+            if movement == 'R': self.direction_index = self.direction_index + 1 if self.direction_index < 3 else 0 
+            if movement == 'L': self.direction_index = self.direction_index - 1 if self.direction_index > 0 else 3 
+
+        if isinstance(movement,int):
+            row = self.grid_rows[self.y - 1]
+
+
+            if self.direction_index == 0: #RIGHT direction 
+                self.x = self._move_right(row, movement)
+            if self.direction_index == 2: #LEFT direction 
+                self.x = self._move_left(row, movement)
+            
+
+
+
+
+
 
 class MonkeyMap:
 
@@ -45,6 +151,8 @@ class MonkeyMap:
 
         grid_rows, path = self._decode_input(input)
 
-        return 1
+
+
+        pass
 
 
