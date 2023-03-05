@@ -17,6 +17,8 @@ class TestDay22(unittest.TestCase):
     def test_monkey_map(self):
 
         mm = challenges.MonkeyMap()
+
+        mm.get_path_password(data.force_field)
         
 
 
