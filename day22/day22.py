@@ -45,13 +45,6 @@ class pointer:
                         
         # there is no wall        
         else:
-            # I have to turn around to the beginning of the line
-            # if next_position > row.right:
-            #     self.x = 1
-            #     movement = next_position - (row.right + 1)
-            #     return self._move_right(row,movement)
-            # # normal movement
-            # else:
             next_position = next_position % (row.right - row.left + 1)
             return next_position
             
@@ -81,15 +74,11 @@ class pointer:
                         
         # there is no wall        
         else:
-            # # I have to turn around to the beginning of the line
-            # if next_position < row.left:
-            #     self.x = 1
-            #     movement = row.right + next_position - 1 #next_position - (row.right + 1)
-            #     return self._move_right(row,movement)
-            # # normal movement
-            # else:
-
-            return next_position
+            if next_position > 0:
+                return next_position
+            else:
+                next_position = abs(next_position) % (row.right - row.left + 1)
+                return row.right - next_position
             
 
 
