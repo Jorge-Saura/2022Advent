@@ -39,7 +39,7 @@ class pointer:
                         if row.left == row.walls[0]:
                             return row.right
                         else:
-                            self.x = 1
+                            self.x = row.left
                             movement = next_position - (row.right + 1)
                             return self._move_right(row,movement)
                         
@@ -54,23 +54,24 @@ class pointer:
         # we have walls en the line
         if row.walls:
                 # I have at least one wall in my line.
-                if row.walls[-1] > self.x:
-                    next_wall = next(x for x in row.walls if x > self.x)
-                    return min(next_position, next_wall - 1)
-                # I dont have wall between my position and the end of the line
+                if row.walls[0] < self.x:
+
+                    next_wall = next(x for x in row.walls[::-1] if x < self.x)
+                    return max(next_position, next_wall + 1)
+                # I dont have wall between my position and the beginning of the line
                 else:
-                    # I dont reach the end of the line
-                    if next_position <= row.right:
+                    # I dont reach the beginning of the line
+                    if next_position >= row.left:
                         return next_position
-                    # I have to turn around to the beginning of the line
+                    # I have to turn around to the end of the line
                     else:
-                        # first position is a wall, I can not move beyond the end of the grid
-                        if row.left == row.walls[0]:
-                            return row.right
+                        # last position is a wall, I can not move beyond the beginning of the grid
+                        if row.right == row.walls[-1]:
+                            return row.left
                         else:
-                            self.x = 1
-                            movement = next_position - (row.right + 1)
-                            return self._move_right(row,movement)
+                            movement = movement + - 1 - (self.x - row.left)
+                            self.x = row.right
+                            return self._move_left(row,movement)
                         
         # there is no wall        
         else:

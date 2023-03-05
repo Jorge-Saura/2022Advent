@@ -72,23 +72,30 @@ class TestDay22(unittest.TestCase):
         
     def test_pointer_left_movement(self):
 
-        # simple left movement with no walls
+        
         p = challenges.pointer()
         p.direction_index = 2
 
-
+        # simple left movement 0
         grid_rows = [challenges.gridRow(1,6,[]),challenges.gridRow(1,6,[4])]
         p.x = 4
         p.grid_rows = grid_rows
-        p.move(2)
-        self.assertEqual(p.x,2, 'simple left movement with no walls')
-
+        p.move(0)
+        self.assertEqual(p.x,4, 'simple left movement 0')
+       
         # turn back left movement with no walls
         grid_rows = [challenges.gridRow(1,6,[]),challenges.gridRow(1,6,[4])]
         p.x = 2
         p.grid_rows = grid_rows
         p.move(10)
         self.assertEqual(p.x,4, 'turn back left movement with no walls')       
+
+        # simple left movement with wall behind, not reaching the wall
+        grid_rows = [challenges.gridRow(1,6,[2]),challenges.gridRow(1,6,[4])]
+        p.grid_rows = grid_rows
+        p.x = 6
+        p.move(2)
+        self.assertEqual(p.x,4, 'simple left movement with wall behind, not reaching the wall')
 
         # simple left movement with wall behind
         grid_rows = [challenges.gridRow(1,6,[2]),challenges.gridRow(1,6,[4])]
@@ -97,10 +104,33 @@ class TestDay22(unittest.TestCase):
         p.move(10)
         self.assertEqual(p.x,3, 'simple left movement with wall behind')
 
+        # turn back left movement with wall at the end of the line
+        grid_rows = [challenges.gridRow(1,6,[6]),challenges.gridRow(1,6,[4])]
+        p.grid_rows = grid_rows
+        p.x = 2
+        p.move(4)
+        self.assertEqual(p.x,1, 'turn back left movement with wall at the end of the line')
 
+        # turn back left movement with wall at middle of the line but not reaching the wall
+        grid_rows = [challenges.gridRow(1,6,[3]),challenges.gridRow(1,6,[4])]
+        p.grid_rows = grid_rows
+        p.x = 2
+        p.move(3)
+        self.assertEqual(p.x, 5, 'turn back left movement with wall at middle of the line but not reaching the wall')
 
+        # turn back left movement with wall at middle of the line reaching the wall
+        grid_rows = [challenges.gridRow(1,6,[3]),challenges.gridRow(1,6,[4])]
+        p.grid_rows = grid_rows
+        p.x = 2
+        p.move(13)
+        self.assertEqual(p.x, 4, 'turn back left movement with wall at middle of the line reaching the wall')
 
-
+                # turn back left movement with wall at middle of the line reaching the wall
+        grid_rows = [challenges.gridRow(6,11,[8]),challenges.gridRow(6,11,[8])]
+        p.grid_rows = grid_rows
+        p.x = 7
+        p.move(13)
+        self.assertEqual(p.x, 9, 'turn back left movement with wall at middle of the line reaching the wall')
 
 if __name__ == "__main__":
 
