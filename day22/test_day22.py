@@ -1,3 +1,6 @@
+#--- Day 22: Monkey Map ----
+
+
 import unittest
 import time
 
@@ -35,6 +38,7 @@ class TestDay22(unittest.TestCase):
         # simple right movement with wall in front
         p = challenges.pointer()
         grid_rows = [challenges.gridRow(1,6,[5]),challenges.gridRow(1,6,[4])]
+        p.grid_columns = [challenges.gridRow(1,6,[5]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4])]
         p.grid_rows = grid_rows
         p.move(10)
         self.assertEqual(p.x,4, 'simple movement with wall in front')
@@ -69,11 +73,31 @@ class TestDay22(unittest.TestCase):
         p.x= 1
         p.move(18)
         self.assertEqual(p.x,1, 'turn back movement without  walls at beginning of the wall')
-        
+
+        # turn back right movement without  walls, more than one cycle
+        p.grid_columns = [challenges.gridRow(1,6,[5]) for _ in range(40)]
+        grid_rows = [challenges.gridRow(10,39,[]),challenges.gridRow(1,15,[4])]
+        p.direction_index = 0
+        p.x = 15
+        p.grid_rows = grid_rows
+        p.move(50)
+        self.assertEqual(p.x, 35,'turn back right movement without  walls, more than one cycle')    
+
+    def test_casos_extranyos(self):
+        p = challenges.pointer()
+        p.grid_columns = [challenges.gridRow(1,6,[5]) for _ in range(40)]
+        grid_rows = [challenges.gridRow(10,39,[10,11,12,20,21,22,28,29,30,31,32]),challenges.gridRow(1,15,[4])]
+        p.direction_index = 0
+        p.x = 15
+        p.grid_rows = grid_rows
+        p.move(50)
+        self.assertEqual(p.x, 19,'XP: to the wall')        
+
     def test_pointer_left_movement(self):
 
         
         p = challenges.pointer()
+        p.grid_columns = [challenges.gridRow(1,6,[5]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4]),challenges.gridRow(1,6,[4])]
         p.direction_index = 2
 
         # simple left movement 0
@@ -135,16 +159,16 @@ class TestDay22(unittest.TestCase):
     def test_decode_input(self):
         mm = challenges.MonkeyMap()
 
-        path = mm._decode_path('10R1L')
-        self.assertListEqual(path,[10,'R',1,'L'])
+        path = mm._decode_path('10R1L5')
+        self.assertListEqual(path,[10,'R',1,'L',5])
 
     def test_get_password(self):
-        mm = challenges.MonkeyMap()
-        result = mm.get_path_password(data.force_field)
-        self.assertEqual(result, 6032)
+            mm = challenges.MonkeyMap()
+            result = mm.get_path_password(data.force_field)
+            self.assertEqual(result, 6032)
 
-        result = mm.get_path_password(data.force_field_full)
-        self.assertEqual(result, 6032)
+            result = mm.get_path_password(data.force_field_full)
+            self.assertEqual(result, 66292) 
 
 if __name__ == "__main__":
 

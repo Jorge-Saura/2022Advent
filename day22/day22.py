@@ -46,8 +46,8 @@ class pointer:
                         
         # there is no wall        
         else:
-            next_position = next_position % (row.right - row.left + 1)
-            return next_position
+            next_position = (movement + (self.x - row.right - 1)) % (row.right - row.left + 1) 
+            return next_position + row.left
             
     def _move_left(self, row:gridRow, movement: int, starting_postion:int) ->  int:
 
@@ -79,7 +79,7 @@ class pointer:
             if next_position > 0:
                 return next_position
             else:
-                next_position = abs(next_position) % (row.right - row.left + 1)
+                next_position = (movement - (self.x - row.left + 1)) % (row.right - row.left + 1)
                 return row.right - next_position
             
     def move(self, movement) -> None:
@@ -146,7 +146,7 @@ class MonkeyMap:
                 temp = ''
             else:
                 temp += c
-
+        decoded_path.append(int(temp))
         return decoded_path
 
     def _decode_input(self, input:str) -> list[str]:
@@ -188,6 +188,8 @@ class MonkeyMap:
         grid_pointer = pointer()
         grid_pointer.grid_columns = grid_columns
         grid_pointer.grid_rows = grid_rows
+
+        grid_pointer.x = grid_rows[0].left
 
         
         for item in path:
