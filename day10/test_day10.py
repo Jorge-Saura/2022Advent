@@ -1,9 +1,9 @@
 import unittest
 
-import day11.day11 as challenges
-import day11.day11_data as data
+import day10.day10 as challenges
+import day10.day10_data as data
 
-class TestDay11(unittest.TestCase):
+class TestDay10(unittest.TestCase):
 
     def test_cathode_ray_tube(self):
 
